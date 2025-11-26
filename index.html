@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tennis Cerca & Gioca</title>
+  <style>
+    /* --- CSS STYLES --- */
+    :root {
+      --primary: #2c3e50;
+      --accent: #e67e22;
+      --bg: #f4f4f9;
+      --card-bg: #fff;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--primary);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    header {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    #app {
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+    }
+    
+    /* Pulsanti */
+    button {
+      cursor: pointer;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: white; width: 100%; margin-bottom: 10px;}
+    .btn-primary:hover { background: #d35400; }
+    .btn-secondary { background: #95a5a6; color: white; }
+    .btn-small { padding: 5px 10px; font-size: 0.9rem; }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-left: 5px solid var(--accent);
+    }
+    .card h3 { margin-top: 0; }
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      background: #e0e0e0;
+    }
+    .status-open { background: #d4edda; color: #155724; }
+    .status-full { background: #f8d7da; color: #721c24; }
+
+    /* Utility */
+    .hidden { display: none; }
+    .menu-grid { display: grid; gap: 15px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🎾 Tennis Match</h1>
+</header>
+
+<main id="app">
+  <!-- Il contenuto verrà iniettato qui da JS -->
+</main>
+
+<script>
+  /* --- DATA LAYER (Simulazione Database) --- */
+  const courts = [
+    { id: 1, name: "Club Centrale", surface: "Terra Rossa", loc: "Centro" },
+    { id: 2, name: "Green Set Arena", surface: "Sintetico", loc: "Nord" },
+    { id: 3, name: "Padel & Tennis", surface: "Erba", loc: "Sud" }
+  ];
+
+  // Stato iniziale delle partite (alcune con posti liberi, altre piene)
+  let matches = [
+    { id: 101, courtId: 1, date: "Oggi", time: "18:00", players: ["Marco", "Luca"], max: 4 },
+    { id: 102, courtId: 2, date: "Domani", time: "20:00", players: ["Sara", "Giulia", "Anna", "Elisa"], max: 4 }
+  ];
+
+  /* --- LOGIC LAYER --- */
+  const app = document.getElementById('app');
+
+  // Funzione per navigare tra le viste
+  function navigate(viewName) {
+    app.innerHTML = ''; // Pulisce lo schermo
+    if (viewName === 'home') renderHome();
+    else if (viewName === 'matches') renderMatches();
+    else if (viewName === 'create') renderCreate();
+  }
+
+  // LOGICA MATCHMAKING: Aggiungi giocatore
+  function joinMatch(matchId) {
+    const match = matches.find(m => m.id === matchId);
+    if (match && match.players.length < match.max) {
+      const name = prompt("Inserisci il tuo nome per unirti:");
+      if (name) {
+        match.players.push(name);
+        alert(`Ti sei unito alla partita di ${match.time}!`);
+        navigate('matches'); // Ricarica la vista per vedere aggiornamento
+      }
+    } else {
+      alert("Partita piena o non trovata!");
+    }
+  }
+
+  // LOGICA CREAZIONE: Crea nuova partita
+  function createMatch(courtId, time) {
+    const newId = Date.now(); // ID univoco semplice
+    matches.push({
+      id: newId,
+      courtId: parseInt(courtId),
+      date: "Nuova Data", // Semplificazione
+      time: time,
+      players: ["Tu (Host)"],
+      max: 4
+    });
+    alert("Partita creata! Ora attendi altri giocatori.");
+    navigate('matches');
+  }
+
+  /* --- VIEW LAYER (Render HTML) --- */
+
+  // 1. VISTA HOME
+  function renderHome() {
+    const html = `
+      <div style="text-align:center;">
+        <h2>Benvenuto, Tifoso!</h2>
+        <p>Cosa vuoi fare oggi?</p>
+      </div>
+      <div class="menu-grid">
+        <button class="btn-primary" onclick="navigate('matches')">👥 Cerca Partite 2vs2</button>
+        <button class="btn-primary" onclick="navigate('create')">📅 Prenota un Campo</button>
+      </div>
+    `;
+    app.innerHTML = html;
+  }
+
+  // 2. VISTA LISTA PARTITE (Matchmaking)
+  function renderMatches() {
+    let cardsHtml = matches.map(m => {
+      const court = courts.find(c => c.id === m.courtId);
+      const isFull = m.players.length >= m.max;
+      const statusClass = isFull ? 'status-full' : 'status-open';
+      const statusText = isFull ? 'COMPLETO' : `CERCO ${m.max - m.players.length}`;
+      
+      return `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between;">
+            <h3>${m.time} @ ${court.name}</h3>
+            <span class="status-badge ${statusClass}">${statusText}</span>
+          </div>
+          <p><strong>Superficie:</strong> ${court.surface}</p>
+          <p><strong>Squadra (${m.players.length}/4):</strong> ${m.players.join(", ")}</p>
+          ${!isFull ? `<button class="btn-primary btn-small" onclick="joinMatch(${m.id})">Unisciti +</button>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    app.innerHTML = `
+      <button class="btn-secondary btn-small" onclick="navigate('home')">⬅ Indietro</button>
+      <h2>Partite Disponibili</h2>
+      ${cardsHtml}
+      ${matches.length === 0 ? '<p>Nessuna partita. Creane una tu!</p>' : ''}
+    `;
+  }
+
+  // 3. VISTA CREAZIONE (Prenotazione semplice)
+  function renderCreate() {
+    // Genera opzioni select dinamicamente dai dati courts
+    const options = courts.map(c => `<option value="${c.id}">${c.name} (${c.surface})</option>`).join('');
+    
+    app.innerHTML = `
+      <button class="btn-secondary btn-small" onclick="navigate('home')">⬅ Indietro</button>
+      <h2>Crea Nuova Sfida</h2>
+      <div class="card">
+        <label>Scegli Campo:</label>
+        <select id="courtSelect" style="width:100%; padding:8px; margin:10px 0;">${options}</select>
+        
+        <label>Orario:</label>
+        <input type="time" id="timeInput" value="19:00" style="width:100%; padding:8px; margin:10px 0;">
+        
+        <button class="btn-primary" onclick="handleCreateClick()">Conferma e Apri Sfida</button>
+      </div>
+    `;
+  }
+
+  // Helper per gestire il click di creazione
+  window.handleCreateClick = function() {
+    const courtId = document.getElementById('courtSelect').value;
+    const time = document.getElementById('timeInput').value;
+    createMatch(courtId, time);
+  }
+
+  // Avvio applicazione
+  navigate('home');
+
+</script>
+</body>
+</html>
