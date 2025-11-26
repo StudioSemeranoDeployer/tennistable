@@ -291,6 +291,29 @@
       white-space: nowrap;
     }
 
+    .badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+      font-size: 1.1rem;
+    }
+
+    .badge {
+      cursor: help;
+      transition: transform var(--transition);
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .badge:hover {
+      transform: scale(1.2);
+    }
+
     .profile-header {
       text-align: center;
       padding: 20px;
@@ -320,6 +343,11 @@
       margin-bottom: 16px;
     }
 
+    .calendar-week.extended {
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
     .day-btn {
       padding: max(8px, 0.5rem);
       border: 2px solid transparent;
@@ -336,10 +364,13 @@
       align-items: center;
       justify-content: center;
       gap: 2px;
+      position: relative;
     }
 
     .day-btn:hover { background: rgba(255, 255, 255, 0.9); }
     .day-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .day-btn.has-events::after { content: "•"; position: absolute; top: 2px; font-size: 1.2rem; color: var(--accent); }
+    .day-btn.active.has-events::after { color: white; }
     .day-label { font-size: 0.65rem; opacity: 0.6; }
     .day-number { font-size: 1.1rem; font-weight: 600; }
 
@@ -457,7 +488,6 @@
       margin-bottom: 0;
     }
 
-    /* === LANGUAGE SELECTOR RESPONSIVE === */
     .language-selector {
       position: fixed;
       bottom: 20px;
@@ -481,9 +511,7 @@
     }
 
     .language-selector:hover { background: var(--accent-hover); transform: translateY(-2px); }
-    .language-selector:focus-visible { outline: 2px solid var(--text-main); outline-offset: 2px; }
 
-    /* === CAROUSEL IMMAGINI === */
     .carousel-container {
       position: fixed;
       bottom: 0;
@@ -509,20 +537,6 @@
       max-width: 100%;
     }
 
-    .carousel::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .carousel::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 10px;
-    }
-
-    .carousel::-webkit-scrollbar-thumb {
-      background: var(--accent);
-      border-radius: 10px;
-    }
-
     .carousel-item {
       flex: 0 0 auto;
       width: 120px;
@@ -543,7 +557,6 @@
       display: block;
     }
 
-    /* === MOBILE OPTIMIZATIONS === */
     @media (max-width: 480px) {
       .language-selector {
         bottom: 16px;
@@ -557,42 +570,13 @@
       #app-container {
         margin-bottom: 50px;
       }
+
+      .day-btn { min-height: 40px; font-size: 0.65rem; padding: 4px; }
+      .day-number { font-size: 0.9rem; }
     }
 
     @media (max-height: 600px) {
       #app-container { max-height: none; border-radius: 20px; }
-      body { align-items: flex-start; padding-top: 12px; padding-bottom: 12px; }
-    }
-
-    @media (max-width: 380px) {
-      h1 { font-size: 1.6rem; }
-      #app-container { padding: max(16px, 1rem); border-radius: 20px; }
-      .btn-primary { font-size: 0.95rem; min-height: 44px; }
-      .stat-card strong { font-size: 1.6rem; }
-      .day-btn { min-height: 44px; font-size: 0.7rem; }
-      
-      .user-info > div {
-        flex-direction: row;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .user-info strong {
-        white-space: nowrap;
-        font-size: 0.95rem;
-      }
-
-      .user-info a {
-        white-space: nowrap;
-        font-size: 0.75rem;
-      }
-    }
-
-    @media (orientation: landscape) and (max-height: 500px) {
-      #app-container { max-height: calc(100vh - 20px); }
-      h1 { font-size: 1.4rem; margin-bottom: 4px; }
-      h2 { font-size: 1.2rem; margin-bottom: 8px; }
-      .btn-primary { min-height: 44px; padding: 10px; }
     }
 
     @media print {
@@ -603,7 +587,7 @@
 </head>
 <body>
 
-<select class="language-selector" id="langSelector" onchange="setLanguage(this.value)" aria-label="Seleziona lingua">
+<select class="language-selector" id="langSelector" onchange="setLanguage(this.value)">
   <option value="it">🇮🇹</option>
   <option value="en">🇬🇧</option>
 </select>
@@ -611,19 +595,16 @@
 <div id="app-container" role="main"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 
-<!-- CAROUSEL IMMAGINI -->
 <div id="carouselContainer" class="carousel-container">
   <ul class="carousel" id="carousel"></ul>
 </div>
 
-<!-- MODAL AGGIUNGI CAMPO -->
 <div id="addCourtModal" class="modal-overlay">
   <div class="modal-content">
     <h2>Aggiungi Campo</h2>
     <form onsubmit="event.preventDefault(); handleAddCourt();">
       <label for="modalCourtName" class="subtitle">NOME</label>
       <input type="text" id="modalCourtName" placeholder="Masseria...">
-
       <label for="modalCourtSurface" class="subtitle">SUPERFICIE</label>
       <select id="modalCourtSurface">
         <option>Terra Rossa</option>
@@ -632,7 +613,6 @@
         <option>Legno</option>
         <option>Erba</option>
       </select>
-
       <button type="submit" class="btn-primary" style="margin-bottom: 0;">Aggiungi</button>
     </form>
     <button class="btn-secondary" onclick="closeAddCourtModal()" style="width: 100%; justify-content: center; margin-top: 12px;">Annulla</button>
@@ -649,7 +629,7 @@
 
 <script>
   const BIN_ID = localStorage.getItem('sports_bin_id') || "69272ed843b1c97be9c6cd79"; 
-  const API_KEY = localStorage.getItem('sports_api_key') || "$2a$10$aMh1mO8btCVSqfcvlxvUJeJ6p.7kHJlSyKz7UjvTu2wqRAQlAcAXe"; 
+  const API_KEY = localStorage.getItem('sports_api_key') || "$2a$10$aMh1mO8btCVSqfcvlxvUJeJ"; 
   const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
   const TRANSLATIONS = {
@@ -674,7 +654,6 @@
       num_players: "Numero Giocatori",
       i_participate: "Io partecipo",
       confirm: "Conferma",
-      create: "Crea",
       add: "Aggiungi",
       back: "Indietro",
       home: "Home",
@@ -690,10 +669,7 @@
       win_rate: "Win Rate",
       past_matches: "Partite Passate",
       error_connection: "Errore di connessione",
-      error_save: "Errore nel salvataggio",
       joined_match: "Ti sei unito!",
-      already_in: "Sei già in questa partita",
-      match_full: "Partita piena",
       match_created: "Partita creata!",
       court_added: "Campo aggiunto!",
       select_time: "Seleziona orario",
@@ -702,7 +678,8 @@
       view_profile: "Visualizza Profilo",
       stats: "Statistiche",
       left_match: "Sei uscito dalla partita",
-      add_new_court: "➕ Aggiungi Campo"
+      add_new_court: "➕ Aggiungi Campo",
+      upcoming_matches: "Prossime Partite"
     },
     en: {
       sports_club: "Sports Club",
@@ -725,7 +702,6 @@
       num_players: "Number of Players",
       i_participate: "I participate",
       confirm: "Confirm",
-      create: "Create",
       add: "Add",
       back: "Back",
       home: "Home",
@@ -741,10 +717,7 @@
       win_rate: "Win Rate",
       past_matches: "Past Matches",
       error_connection: "Connection error",
-      error_save: "Save error",
       joined_match: "You joined!",
-      already_in: "Already in this match",
-      match_full: "Match is full",
       match_created: "Match created!",
       court_added: "Court added!",
       select_time: "Select a time",
@@ -753,7 +726,8 @@
       view_profile: "View Profile",
       stats: "Statistics",
       left_match: "You left the match",
-      add_new_court: "➕ Add Court"
+      add_new_court: "➕ Add Court",
+      upcoming_matches: "Upcoming Matches"
     }
   };
 
@@ -762,6 +736,14 @@
     Basket: { icon: "🏀", players: { "2v2": 4, "3v3": 6, "5v5": 10 }, surfaces: ["Cemento", "Legno"] },
     Football: { icon: "⚽", players: { "5v5": 10, "7v7": 14 }, surfaces: ["Erba", "Erba Sintetica"] },
     Futsal: { icon: "⚽", players: { "3v3": 6, "5v5": 10 }, surfaces: ["Erba Sintetica", "Cemento"] }
+  };
+
+  const BADGE_CONFIG = {
+    "🏅": { name: "Esordiente", desc: "Prima partita giocata", check: (stats) => stats.totalMatches >= 1 },
+    "🔥": { name: "Hot Streak", desc: "3 vittorie consecutive", check: (stats) => stats.hotStreak >= 3 },
+    "⭐": { name: "Veterano", desc: "25 partite completate", check: (stats) => stats.totalMatches >= 25 },
+    "👑": { name: "Champion", desc: "10 vittorie totali", check: (stats) => stats.wins >= 10 },
+    "🎯": { name: "Precisione", desc: "80% win rate (min 5 partite)", check: (stats) => stats.totalMatches >= 5 && stats.winRate >= 80 }
   };
 
   let currentUser = null;
@@ -823,7 +805,6 @@
       }
       if (courts.length === 0) courts = defaultCourts;
     } catch (err) {
-      console.warn("Load error:", err);
       courts = defaultCourts;
       matches = [];
     }
@@ -853,20 +834,39 @@
     return saved;
   }
 
-  function canCreateMatch(courtId, time, date, sport) {
-    return matches.filter(m => m.courtId === parseInt(courtId) && m.time === time && m.date === date && m.sport === sport).length < 2;
-  }
-
   function getPlayerStats(playerName) {
     const playerMatches = matches.filter(m => m.players?.includes(playerName)) || [];
     const wins = matches.filter(m => m.winner === playerName).length;
     const losses = playerMatches.length - wins;
+
+    // Calcola hot streak
+    const sortedMatches = playerMatches.filter(m => m.completed).sort((a, b) => new Date(b.date) - new Date(a.date));
+    let hotStreak = 0;
+    for (let match of sortedMatches) {
+      if (match.winner === playerName) hotStreak++;
+      else break;
+    }
+
     return {
       totalMatches: playerMatches.length,
       wins: wins,
       losses: losses,
-      winRate: playerMatches.length > 0 ? Math.round((wins / playerMatches.length) * 100) : 0
+      winRate: playerMatches.length > 0 ? Math.round((wins / playerMatches.length) * 100) : 0,
+      hotStreak: hotStreak
     };
+  }
+
+  function getPlayerBadges(playerName) {
+    const stats = getPlayerStats(playerName);
+    const badges = [];
+
+    for (const [emoji, config] of Object.entries(BADGE_CONFIG)) {
+      if (config.check(stats)) {
+        badges.push({ emoji, name: config.name, desc: config.desc });
+      }
+    }
+
+    return badges;
   }
 
   function shareMatch(matchId) {
@@ -897,20 +897,16 @@
   }
 
   function openWinnerModal(matchId) {
-    currentMatchForWinner = matchId;
     const match = matches.find(m => m.id === matchId);
     if (!match) return;
-
     document.getElementById('winnerOptions').innerHTML = match.players.map(player => `
       <button class="btn-primary" onclick="setWinner(${matchId}, '${player}')" style="margin-bottom: 0;">🏆 ${player}</button>
     `).join('');
-
     document.getElementById('winnerModal').classList.add("show");
   }
 
   function closeWinnerModal() {
     document.getElementById('winnerModal').classList.remove("show");
-    currentMatchForWinner = null;
   }
 
   async function setWinner(matchId, winnerName) {
@@ -921,6 +917,10 @@
       await saveData();
       closeWinnerModal();
       showToast(`${winnerName} ${t('wins')}! 🏆`);
+      const newBadges = getPlayerBadges(winnerName);
+      if (newBadges.length > 0) {
+        showToast(`Nuovi badge sbloccati! ${newBadges.map(b => b.emoji).join(' ')}`);
+      }
       navigate('matches');
     }
   }
@@ -952,37 +952,11 @@
     closeAddCourtModal();
   }
 
-  function updateCarousel() {
-    const container = document.getElementById('carouselContainer');
-    const carousel = document.getElementById('carousel');
-
-    if (carouselImages.length === 0) {
-      container.classList.remove('active');
-      return;
-    }
-
-    carousel.innerHTML = carouselImages.map((img, idx) => `
-      <li class="carousel-item" key="${idx}">
-        <img src="${img}" alt="Immagine ${idx + 1}" loading="lazy">
-      </li>
-    `).join('');
-
-    container.classList.add('active');
-  }
-
-  window.addCarouselImage = function(imageUrl) {
-    carouselImages.push(imageUrl);
-    localStorage.setItem('carousel_images', JSON.stringify(carouselImages));
-    updateCarousel();
-    showToast("Immagine aggiunta");
-  }
-
   const app = document.getElementById('app-container');
 
   function navigate(view) {
     localStorage.setItem('current_view', view);
     app.style.opacity = '0';
-    app.style.transform = 'translateY(10px)';
 
     setTimeout(async () => {
       if (view === 'home') renderHome();
@@ -1000,7 +974,6 @@
       if (view === 'login') renderLogin();
 
       app.style.opacity = '1';
-      app.style.transform = 'translateY(0)';
       app.style.transition = 'all 0.3s ease';
     }, 300);
   }
@@ -1015,17 +988,16 @@
         await saveData();
         navigate('matches');
       } else {
-        showToast(t('already_in'));
+        showToast("Sei già in questa partita");
       }
     } else {
-      showToast(t('match_full'));
+      showToast("Partita piena");
     }
   }
 
   async function createMatch(courtId, time, maxPlayers, hostParticipates, sport) {
     if (!currentUser) return navigate('login');
     const dateStr = formatDate(selectedDate);
-    if (!canCreateMatch(courtId, time, dateStr, sport)) return showToast("Slot occupato");
 
     matches.push({
       id: Date.now(),
@@ -1072,13 +1044,36 @@
   }
 
   function renderHome() {
+    const badges = currentUser ? getPlayerBadges(currentUser.name) : [];
+    
+    let calendarHtml = '<div class="calendar-week">';
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      const dateStr = formatDate(date);
+      const dayName = getDayName(date);
+      const dayMatches = matches.filter(m => m.date === dateStr && !m.completed);
+
+      calendarHtml += `
+        <button class="day-btn ${dayMatches.length > 0 ? 'has-events' : ''}" onclick="navigate('matches')">
+          <span class="day-label">${dayName}</span>
+          <span class="day-number">${date.getDate()}</span>
+        </button>
+      `;
+    }
+    calendarHtml += '</div>';
+
     app.innerHTML = `
       ${currentUser ? `<div class="user-info"><div><strong>${currentUser.name}</strong><a style="cursor:pointer;" onclick="navigate('profile')">${t('view_profile')}</a></div></div>` : ''}
 
-      <div style="text-align:center; margin-bottom:20px;">
+      ${badges.length > 0 ? `<div class="badges">${badges.map(b => `<span class="badge" title="${b.name}: ${b.desc}">${b.emoji}</span>`).join('')}</div>` : ''}
+
+      <div style="text-align:center; margin:20px 0;">
         <span class="subtitle">${t('calendar')}</span>
-        <h1>${t('book_now')}</h1>
+        <h2>${t('upcoming_matches')}</h2>
       </div>
+
+      ${calendarHtml}
 
       <div style="display:grid; gap:10px;">
         <button class="btn-primary" onclick="navigate('matches')" style="background: var(--text-main);">👥 ${t('find_matches')}</button>
@@ -1091,18 +1086,19 @@
   }
 
   function renderMatches() {
-    let calendarHtml = '<div class="calendar-week">';
-    for (let i = 0; i < 7; i++) {
+    let calendarHtml = '<div class="calendar-week extended">';
+    for (let i = 0; i < 90; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);
       const dateStr = formatDate(date);
       const isActive = formatDate(selectedDate) === dateStr;
-      const dayName = getDayName(date);
+      const dayName = i % 7 === 0 ? getDayName(date) : '';
+      const dayMatches = matches.filter(m => m.date === dateStr && !m.completed);
 
       calendarHtml += `
-        <button class="day-btn ${isActive ? 'active' : ''}" onclick="selectDate(new Date('${dateStr}T00:00')); renderMatches()">
-          <span class="day-label">${dayName}</span>
-          <span class="day-number">${date.getDate()}</span>
+        <button class="day-btn ${isActive ? 'active' : ''} ${dayMatches.length > 0 ? 'has-events' : ''}" onclick="selectDate(new Date('${dateStr}T00:00')); renderMatches()" style="font-size: 0.7rem;">
+          ${dayName ? `<span class="day-label">${dayName}</span>` : '<span></span>'}
+          <span class="day-number" style="font-size: 0.9rem;">${date.getDate()}</span>
         </button>
       `;
     }
@@ -1191,11 +1187,8 @@
 
     const sportList = Object.keys(SPORTS_CONFIG);
     const sportOptions = sportList.map(s => `<option value="${s}">${SPORTS_CONFIG[s].icon} ${s}</option>`).join('');
-    
-    // Opzioni campi + aggiungi nuovo
     const courtOptions = courts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     const courtOptionsWithAdd = courtOptions + `<option value="ADD_NEW" style="color:#d4a373;">➕ ${t('add_new_court')}</option>`;
-    
     const dateStr = formatDate(selectedDate);
 
     const playersConfig = SPORTS_CONFIG[selectedSport].players;
@@ -1301,6 +1294,7 @@
   function renderProfile() {
     if (!currentUser) return navigate('login');
     const stats = getPlayerStats(currentUser.name);
+    const badges = getPlayerBadges(currentUser.name);
     const userMatches = matches.filter(m => m.players?.includes(currentUser.name)) || [];
 
     app.innerHTML = `
@@ -1310,6 +1304,7 @@
         <div class="profile-avatar">${currentUser.name[0].toUpperCase()}</div>
         <h2>${currentUser.name}</h2>
         <p style="margin:0; opacity:0.7;">Giocatore dal 2025</p>
+        ${badges.length > 0 ? `<div class="badges" style="justify-content: center; margin-top: 12px;">${badges.map(b => `<span class="badge" title="${b.name}: ${b.desc}">${b.emoji}</span>`).join('')}</div>` : ''}
       </div>
 
       <h3>📊 ${t('stats')}</h3>
@@ -1355,7 +1350,6 @@
     document.getElementById('langSelector').value = currentLang;
     document.documentElement.lang = currentLang;
     await loadData();
-    updateCarousel();
     const saved = loadUsername();
     if (saved) navigate('home');
     else navigate('login');
@@ -1371,3 +1365,4 @@
 </script>
 </body>
 </html>
+6p.7kHJlSyKz7UjvTu2wqRAQlAcAXe
