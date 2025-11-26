@@ -25,9 +25,7 @@
       --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    *,
-    *::before,
-    *::after {
+    * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
@@ -73,19 +71,9 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    #app-container::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    #app-container::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 10px;
-    }
-
-    #app-container::-webkit-scrollbar-thumb {
-      background: var(--accent);
-      border-radius: 10px;
-    }
+    #app-container::-webkit-scrollbar { width: 6px; }
+    #app-container::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 10px; }
+    #app-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
     h1, h2, h3 {
       font-family: 'Playfair Display', serif;
@@ -271,8 +259,17 @@
       flex: 1;
       min-width: 0;
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .user-info strong {
@@ -293,26 +290,22 @@
 
     .badges {
       display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-      font-size: 1.1rem;
+      gap: 4px;
+      align-items: center;
+      font-size: 1rem;
     }
 
     .badge {
       cursor: help;
       transition: transform var(--transition);
-      display: inline-block;
-      width: 28px;
-      height: 28px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      width: 22px;
+      height: 22px;
     }
 
-    .badge:hover {
-      transform: scale(1.2);
-    }
+    .badge:hover { transform: scale(1.2); }
 
     .profile-header {
       text-align: center;
@@ -344,8 +337,9 @@
     }
 
     .calendar-week.extended {
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 4px;
+      margin: 16px 0;
     }
 
     .day-btn {
@@ -488,21 +482,21 @@
       margin-bottom: 0;
     }
 
+    /* === LANGUAGE SELECTOR MINIMAL 2025 === */
     .language-selector {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: var(--accent);
-      border: none;
-      padding: 8px 10px;
-      border-radius: 50px;
-      font-size: 0.85rem;
+      background: transparent;
+      border: 1px solid var(--text-main);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
       cursor: pointer;
-      min-height: 40px;
-      min-width: 40px;
+      min-height: 28px;
+      min-width: 28px;
       z-index: 100;
-      box-shadow: var(--shadow-lg);
-      color: white;
+      color: var(--text-main);
       font-weight: 600;
       transition: all var(--transition);
       display: flex;
@@ -510,7 +504,10 @@
       justify-content: center;
     }
 
-    .language-selector:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .language-selector:hover { 
+      background: var(--text-main);
+      color: white;
+    }
 
     .carousel-container {
       position: fixed;
@@ -559,18 +556,15 @@
 
     @media (max-width: 480px) {
       .language-selector {
-        bottom: 16px;
-        right: 16px;
-        padding: 6px 8px;
-        min-height: 36px;
-        min-width: 36px;
-        font-size: 0.75rem;
+        bottom: 12px;
+        right: 12px;
+        padding: 3px 6px;
+        min-height: 24px;
+        min-width: 24px;
+        font-size: 0.6rem;
       }
 
-      #app-container {
-        margin-bottom: 50px;
-      }
-
+      #app-container { margin-bottom: 50px; }
       .day-btn { min-height: 40px; font-size: 0.65rem; padding: 4px; }
       .day-number { font-size: 0.9rem; }
     }
@@ -588,8 +582,8 @@
 <body>
 
 <select class="language-selector" id="langSelector" onchange="setLanguage(this.value)">
-  <option value="it">🇮🇹</option>
-  <option value="en">🇬🇧</option>
+  <option value="it">IT</option>
+  <option value="en">EN</option>
 </select>
 
 <div id="app-container" role="main"></div>
@@ -735,15 +729,16 @@
     Tennis: { icon: "🎾", players: { "2 (Singolare)": 2, "4 (Doppio 2v2)": 4 }, surfaces: ["Terra Rossa", "Erba Sintetica", "Cemento"] },
     Basket: { icon: "🏀", players: { "2v2": 4, "3v3": 6, "5v5": 10 }, surfaces: ["Cemento", "Legno"] },
     Football: { icon: "⚽", players: { "5v5": 10, "7v7": 14 }, surfaces: ["Erba", "Erba Sintetica"] },
-    Futsal: { icon: "⚽", players: { "3v3": 6, "5v5": 10 }, surfaces: ["Erba Sintetica", "Cemento"] }
+    Futsal: { icon: "⚽", players: { "3v3": 6, "5v5": 10 }, surfaces: ["Erba Sintetica", "Cemento"] },
+    Padel: { icon: "🎾", players: { "2v2": 4 }, surfaces: ["Cemento"] }
   };
 
   const BADGE_CONFIG = {
-    "🏅": { name: "Esordiente", desc: "Prima partita giocata", check: (stats) => stats.totalMatches >= 1 },
+    "🏅": { name: "Esordiente", desc: "10 vittorie", check: (stats) => stats.wins >= 10 },
     "🔥": { name: "Hot Streak", desc: "3 vittorie consecutive", check: (stats) => stats.hotStreak >= 3 },
-    "⭐": { name: "Veterano", desc: "25 partite completate", check: (stats) => stats.totalMatches >= 25 },
-    "👑": { name: "Champion", desc: "10 vittorie totali", check: (stats) => stats.wins >= 10 },
-    "🎯": { name: "Precisione", desc: "80% win rate (min 5 partite)", check: (stats) => stats.totalMatches >= 5 && stats.winRate >= 80 }
+    "⭐": { name: "Veterano", desc: "20 vittorie", check: (stats) => stats.wins >= 20 },
+    "👑": { name: "Champion", desc: "30 vittorie", check: (stats) => stats.wins >= 30 },
+    "🎯": { name: "Precisione", desc: "80% win rate", check: (stats) => stats.totalMatches >= 5 && stats.winRate >= 80 }
   };
 
   let currentUser = null;
@@ -839,7 +834,6 @@
     const wins = matches.filter(m => m.winner === playerName).length;
     const losses = playerMatches.length - wins;
 
-    // Calcola hot streak
     const sortedMatches = playerMatches.filter(m => m.completed).sort((a, b) => new Date(b.date) - new Date(a.date));
     let hotStreak = 0;
     for (let match of sortedMatches) {
@@ -880,8 +874,6 @@
 
     if (navigator.share) {
       navigator.share({ title: `Valle d'Itria ${match.sport}`, text: shareText }).catch(() => {});
-    } else {
-      showToast("Share non disponibile");
     }
   }
 
@@ -917,10 +909,6 @@
       await saveData();
       closeWinnerModal();
       showToast(`${winnerName} ${t('wins')}! 🏆`);
-      const newBadges = getPlayerBadges(winnerName);
-      if (newBadges.length > 0) {
-        showToast(`Nuovi badge sbloccati! ${newBadges.map(b => b.emoji).join(' ')}`);
-      }
       navigate('matches');
     }
   }
@@ -1020,7 +1008,7 @@
   function renderLogin() {
     app.innerHTML = `
       <div style="text-align:center; padding: max(20px, 1.5rem);">
-        <h1>🎾⚽🏀</h1>
+        <h1>🎾⚽🏀🏸</h1>
         <h2 style="margin-bottom: 4px;">${t('sports_club')}</h2>
         <p style="margin-bottom: 20px;">Valle d'Itria</p>
 
@@ -1064,22 +1052,21 @@
     calendarHtml += '</div>';
 
     app.innerHTML = `
-      ${currentUser ? `<div class="user-info"><div><strong>${currentUser.name}</strong><a style="cursor:pointer;" onclick="navigate('profile')">${t('view_profile')}</a></div></div>` : ''}
-
-      ${badges.length > 0 ? `<div class="badges">${badges.map(b => `<span class="badge" title="${b.name}: ${b.desc}">${b.emoji}</span>`).join('')}</div>` : ''}
+      ${currentUser ? `<div class="user-info"><div class="user-name"><strong>${currentUser.name}</strong>${badges.length > 0 ? `<div class="badges">${badges.map(b => `<span class="badge" title="${b.name}: ${b.desc}">${b.emoji}</span>`).join('')}</div>` : ''}</div><a style="cursor:pointer;" onclick="navigate('profile')">${t('view_profile')}</a></div>` : ''}
 
       <div style="text-align:center; margin:20px 0;">
         <span class="subtitle">${t('calendar')}</span>
         <h2>${t('upcoming_matches')}</h2>
       </div>
 
-      ${calendarHtml}
-
-      <div style="display:grid; gap:10px;">
+      <div style="display:grid; gap:10px; margin-bottom:20px;">
         <button class="btn-primary" onclick="navigate('matches')" style="background: var(--text-main);">👥 ${t('find_matches')}</button>
         <button class="btn-primary" onclick="navigate('create')" style="background: var(--accent);">📅 ${t('create_match')}</button>
         <button class="btn-primary" onclick="navigate('stats')" style="background: rgba(212, 163, 115, 0.8);">📊 ${t('my_stats')}</button>
       </div>
+
+      <h3 style="margin-bottom: 12px; font-size: 0.9rem; opacity: 0.7;">Prossimi 7 giorni</h3>
+      ${calendarHtml}
 
       ${currentUser ? `<button class="btn-secondary" onclick="localStorage.removeItem('sports_username'); currentUser = null; navigate('login')" style="width:100%; justify-content:center; margin-top:20px;">${t('change_user')}</button>` : ''}
     `;
@@ -1087,18 +1074,18 @@
 
   function renderMatches() {
     let calendarHtml = '<div class="calendar-week extended">';
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 15; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);
       const dateStr = formatDate(date);
       const isActive = formatDate(selectedDate) === dateStr;
-      const dayName = i % 7 === 0 ? getDayName(date) : '';
+      const dayName = i % 5 === 0 ? getDayName(date) : '';
       const dayMatches = matches.filter(m => m.date === dateStr && !m.completed);
 
       calendarHtml += `
-        <button class="day-btn ${isActive ? 'active' : ''} ${dayMatches.length > 0 ? 'has-events' : ''}" onclick="selectDate(new Date('${dateStr}T00:00')); renderMatches()" style="font-size: 0.7rem;">
+        <button class="day-btn ${isActive ? 'active' : ''} ${dayMatches.length > 0 ? 'has-events' : ''}" onclick="selectDate(new Date('${dateStr}T00:00')); renderMatches()">
           ${dayName ? `<span class="day-label">${dayName}</span>` : '<span></span>'}
-          <span class="day-number" style="font-size: 0.9rem;">${date.getDate()}</span>
+          <span class="day-number">${date.getDate()}</span>
         </button>
       `;
     }
@@ -1134,7 +1121,7 @@
 
     let archiveHtml = '';
     if (pastMatches.length > 0) {
-      const archiveCards = pastMatches.map(m => {
+      const archiveCards = pastMatches.slice(0, 10).map(m => {
         const court = courts.find(c => c.id === m.courtId) || { name: "?" };
         const sportIcon = SPORTS_CONFIG[m.sport]?.icon || "⚽";
 
@@ -1304,7 +1291,7 @@
         <div class="profile-avatar">${currentUser.name[0].toUpperCase()}</div>
         <h2>${currentUser.name}</h2>
         <p style="margin:0; opacity:0.7;">Giocatore dal 2025</p>
-        ${badges.length > 0 ? `<div class="badges" style="justify-content: center; margin-top: 12px;">${badges.map(b => `<span class="badge" title="${b.name}: ${b.desc}">${b.emoji}</span>`).join('')}</div>` : ''}
+        ${badges.length > 0 ? `<div class="badges" style="justify-content: center; margin-top: 12px; gap: 6px;">${badges.map(b => `<span class="badge" title="${b.name}: ${b.desc}">${b.emoji}</span>`).join('')}</div>` : ''}
       </div>
 
       <h3>📊 ${t('stats')}</h3>
