@@ -2,16 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
   <meta name="theme-color" content="#1a2e1a">
+  <meta name="description" content="Valle d'Itria Sports Club - Book courts, find matches, track stats">
   <title>Valle d'Itria Sports Club</title>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
   <style>
-    /* === DESIGN SYSTEM: Mobile-First === */
+    /* === RESET & VARIABLES === */
     :root {
       --text-main: #1a2e1a;
       --text-muted: #5c6b5c;
@@ -22,29 +23,36 @@
       --shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
       --radius: 14px;
-      --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    html { font-size: 16px; }
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
 
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       color: var(--text-main);
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200"><defs><filter id="blur"><feGaussianBlur in="SourceGraphic" stdDeviation="3"/></filter></defs><rect width="1200" height="1200" fill="%23fdfcf8"/>ircle cx="200" cy="150" r="300" fill="%23d4a373" opacity="0.05"/>ircle cx="1000" cy="900" r="400" fill="%231a2e1a" opacity="0.03"/></svg>');
+      background: linear-gradient(135deg, #fdfcf8 0%, #f9f7f3 100%);
       background-attachment: fixed;
-      background-size: cover;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: clamp(16px, 4vw, 20px);
+      padding: max(16px, 1rem);
     }
 
-    /* === CONTAINER PRINCIPALE === */
+    /* === CONTAINER === */
     #app-container {
       width: 100%;
       max-width: 480px;
@@ -53,67 +61,108 @@
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
       border-radius: 24px;
-      padding: clamp(24px, 6vw, 40px);
+      padding: max(20px, 1.5rem);
       box-shadow: var(--shadow-lg);
-      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
       max-height: 95vh;
       overflow-y: auto;
-      scroll-behavior: smooth;
+      overflow-x: hidden;
     }
 
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    /* === TIPOGRAFIA === */
-    h1, h2, h3 {
+    #app-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #app-container::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+
+    #app-container::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 10px;
+    }
+
+    /* === TYPOGRAPHY === */
+    h1,
+    h2,
+    h3 {
       font-family: 'Playfair Display', serif;
       font-weight: 600;
       margin: 0;
       letter-spacing: -0.02em;
+      line-height: 1.2;
     }
-    
-    h1 { font-size: clamp(1.8rem, 5vw, 2.2rem); margin-bottom: 8px; }
-    h2 { font-size: clamp(1.2rem, 4vw, 1.5rem); margin-bottom: 12px; }
-    h3 { font-size: 1rem; margin-bottom: 8px; }
 
-    p { 
-      font-size: 0.95rem; 
-      line-height: 1.6; 
-      color: var(--text-muted); 
+    h1 {
+      font-size: min(2.2rem, 6vw);
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: min(1.5rem, 5vw);
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-muted);
       margin: 0 0 16px 0;
     }
-    
+
     .subtitle {
       text-transform: uppercase;
       letter-spacing: 0.12em;
       font-size: 0.65rem;
       color: var(--accent);
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       display: block;
     }
 
     /* === BUTTONS === */
     button {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: inherit;
       font-weight: 500;
       cursor: pointer;
       border: none;
-      transition: var(--transition);
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
       letter-spacing: 0.01em;
       outline: 2px solid transparent;
       outline-offset: 2px;
     }
 
-    button:focus-visible { outline: 2px solid var(--accent); }
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
 
     .btn-primary {
       background: var(--text-main);
       color: white;
       width: 100%;
-      padding: clamp(14px, 3vw, 16px);
+      padding: max(14px, 1rem);
       border-radius: var(--radius);
       font-size: 1rem;
       display: flex;
@@ -122,12 +171,16 @@
       gap: 10px;
       box-shadow: 0 4px 12px rgba(26, 46, 26, 0.15);
       min-height: 48px;
+      margin-bottom: 10px;
     }
-    
-    .btn-primary:active { transform: scale(0.98); }
-    .btn-primary:hover { 
+
+    .btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(26, 46, 26, 0.25);
+    }
+
+    .btn-primary:last-child {
+      margin-bottom: 0;
     }
 
     .btn-secondary {
@@ -136,41 +189,82 @@
       padding: 8px 0;
       font-size: 0.9rem;
       opacity: 0.6;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 5px;
     }
-    .btn-secondary:hover { opacity: 1; }
+
+    .btn-secondary:hover {
+      opacity: 1;
+    }
 
     .btn-small {
       background: var(--accent);
       color: white;
-      padding: clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px);
+      padding: max(6px, 0.5rem) max(12px, 1rem);
       border-radius: 50px;
       font-size: 0.8rem;
       font-weight: 600;
       min-height: 40px;
       min-width: 40px;
+      white-space: nowrap;
     }
-    .btn-small:hover { background: var(--accent-hover); }
 
-    /* === FORM ELEMENTS === */
-    select, input {
+    .btn-small:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-share {
+      background: rgba(212, 163, 115, 0.15);
+      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(212, 163, 115, 0.3);
+      min-height: auto;
+      margin: 0;
+    }
+
+    .btn-share:hover {
+      background: rgba(212, 163, 115, 0.25);
+    }
+
+    /* === FORMS === */
+    select,
+    input {
       width: 100%;
-      padding: clamp(12px, 2vw, 15px);
+      padding: max(12px, 1rem);
       border: 1px solid rgba(0, 0, 0, 0.1);
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.85);
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: inherit;
       margin-bottom: 12px;
       font-size: 1rem;
       outline: none;
-      transition: var(--transition);
+      transition: border-color var(--transition), box-shadow var(--transition);
       min-height: 44px;
+      -webkit-appearance: none;
+      appearance: none;
     }
-    select:focus, input:focus { 
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a2e1a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 36px;
+    }
+
+    select:focus,
+    input:focus {
       border-color: var(--text-main);
       box-shadow: 0 0 0 3px rgba(26, 46, 26, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
     }
 
     /* === CARDS === */
@@ -178,28 +272,45 @@
       background: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 16px;
-      padding: clamp(14px, 3vw, 20px);
+      padding: max(14px, 1rem);
       margin-bottom: 12px;
-      transition: var(--transition);
-    }
-    .match-card:active { transform: scale(0.98); }
-    .match-card:hover { 
-      transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.95);
+      transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
     }
 
-    .sport-icon { display: inline-block; font-size: 1.3rem; margin-right: 6px; }
+    .match-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .sport-icon {
+      display: inline-block;
+      font-size: 1.3rem;
+      margin-right: 6px;
+      line-height: 1;
+    }
 
     /* === STATS === */
     .stat-card {
       background: linear-gradient(135deg, rgba(212, 163, 115, 0.1) 0%, rgba(212, 163, 115, 0.05) 100%);
       border: 1px solid rgba(212, 163, 115, 0.3);
       border-radius: 12px;
-      padding: clamp(12px, 3vw, 16px);
+      padding: max(12px, 1rem);
       margin-bottom: 10px;
       text-align: center;
     }
-    .stat-card strong { font-size: clamp(1.4rem, 5vw, 2rem); color: var(--accent); }
+
+    .stat-card strong {
+      font-size: min(2rem, 6vw);
+      color: var(--accent);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .stat-card p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
 
     /* === USER INFO === */
     .user-info {
@@ -212,12 +323,60 @@
       margin-bottom: 16px;
     }
 
-    .user-avatar { 
-      width: 44px; 
-      height: 44px; 
-      border-radius: 50%; 
-      background: var(--accent); 
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .user-info > div {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-info strong {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-info a {
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    /* === PROFILE === */
+    .profile-header {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(212, 163, 115, 0.1) 0%, rgba(212, 163, 115, 0.05) 100%);
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 600;
+      color: white;
     }
 
     /* === CALENDAR === */
@@ -229,24 +388,26 @@
     }
 
     .day-btn {
-      padding: clamp(8px, 2vw, 10px);
+      padding: max(8px, 0.5rem);
       border: 2px solid transparent;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.7);
       cursor: pointer;
       text-align: center;
-      font-size: clamp(0.7rem, 2vw, 0.8rem);
-      transition: var(--transition);
+      font-size: 0.8rem;
+      transition: all var(--transition);
       font-weight: 500;
-      min-height: 56px;
+      min-height: 48px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 2px;
     }
 
-    .day-btn:active { transform: scale(0.95); }
-    .day-btn:hover { background: rgba(255, 255, 255, 0.9); }
+    .day-btn:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
 
     .day-btn.active {
       background: var(--accent);
@@ -254,37 +415,57 @@
       border-color: var(--accent);
     }
 
-    .day-label { font-size: 0.65rem; opacity: 0.6; }
-    .day-number { font-size: clamp(1rem, 3vw, 1.1rem); margin-top: 2px; font-weight: 600; }
+    .day-label {
+      font-size: 0.65rem;
+      opacity: 0.6;
+    }
+
+    .day-number {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
 
     /* === ACCORDION === */
-    .accordion { margin-top: 16px; }
+    .accordion {
+      margin-top: 16px;
+    }
 
     .accordion-header {
       background: rgba(212, 163, 115, 0.15);
-      padding: clamp(12px, 3vw, 15px);
+      padding: max(12px, 1rem);
       border-radius: var(--radius);
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-weight: 600;
-      transition: var(--transition);
+      transition: all var(--transition);
       min-height: 48px;
+      border: 1px solid rgba(212, 163, 115, 0.3);
     }
 
-    .accordion-header:active { transform: scale(0.98); }
-    .accordion-header:hover { background: rgba(212, 163, 115, 0.25); }
-    .accordion-header.open { background: var(--accent); color: white; }
+    .accordion-header:hover {
+      background: rgba(212, 163, 115, 0.25);
+    }
+
+    .accordion-header.open {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
 
     .accordion-content {
       display: none;
-      padding: clamp(12px, 3vw, 15px);
+      padding: max(12px, 1rem);
       background: rgba(0, 0, 0, 0.02);
       border-radius: 0 0 var(--radius) var(--radius);
+      border: 1px solid rgba(212, 163, 115, 0.2);
+      border-top: none;
     }
 
-    .accordion-content.open { display: block; }
+    .accordion-content.open {
+      display: block;
+    }
 
     /* === TOAST === */
     #toast {
@@ -297,18 +478,57 @@
       position: fixed;
       z-index: 1000;
       bottom: 20px;
-      left: 20px;
-      right: 20px;
-      max-width: 400px;
-      margin: 0 auto;
+      left: max(20px, 1rem);
+      right: max(20px, 1rem);
       box-shadow: var(--shadow-lg);
       font-size: 0.9rem;
       opacity: 0;
       transition: opacity 0.3s, bottom 0.3s;
     }
-    #toast.show { visibility: visible; opacity: 1; bottom: 30px; }
 
-    /* === UTILITÀ === */
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 30px;
+    }
+
+    /* === MODAL === */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 1rem;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: max(20px, 1.5rem);
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-content h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* === UTILITIES === */
     .checkbox-group {
       display: flex;
       gap: 10px;
@@ -324,85 +544,151 @@
       min-height: 20px;
     }
 
+    .checkbox-group label {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
     .date-modifier {
-      display: flex;
-      gap: 6px;
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 8px;
       margin-bottom: 12px;
     }
 
     .date-modifier button {
-      flex: 1;
       padding: 10px;
       background: rgba(0, 0, 0, 0.05);
       color: var(--text-main);
       border-radius: 8px;
       font-weight: 500;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      margin-bottom: 0;
     }
 
     .language-selector {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: rgba(255, 255, 255, 0.8);
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.9);
       border: 1px solid rgba(0, 0, 0, 0.1);
-      padding: 6px 12px;
+      padding: 8px 12px;
       border-radius: 8px;
       font-size: 0.85rem;
       cursor: pointer;
       min-height: 40px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
     }
 
-    /* === RESPONSIVE: Tablet === */
-    @media (min-width: 600px) {
-      #app-container { max-width: 520px; }
-      .calendar-week { gap: 8px; }
+    .language-selector:focus-visible {
+      outline: 2px solid var(--accent);
     }
 
-    /* === RESPONSIVE: Landscape Mobile === */
-    @media (max-height: 500px) {
-      #app-container { max-height: none; padding: 20px; }
-      body { align-items: flex-start; padding-top: 20px; }
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
     }
 
-    /* === SCROLLBAR CUSTOM === */
-    #app-container::-webkit-scrollbar {
-      width: 6px;
+    /* === RESPONSIVE === */
+    @media (max-height: 600px) {
+      #app-container {
+        max-height: none;
+        border-radius: 20px;
+      }
+
+      body {
+        align-items: flex-start;
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
     }
 
-    #app-container::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 10px;
+    @media (max-width: 380px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      #app-container {
+        padding: max(16px, 1rem);
+        border-radius: 20px;
+      }
+
+      .btn-primary {
+        font-size: 0.95rem;
+        min-height: 44px;
+      }
+
+      .stat-card strong {
+        font-size: 1.6rem;
+      }
+
+      .day-btn {
+        min-height: 44px;
+        font-size: 0.7rem;
+      }
     }
 
-    #app-container::-webkit-scrollbar-thumb {
-      background: var(--accent);
-      border-radius: 10px;
+    @media (orientation: landscape) and (max-height: 500px) {
+      #app-container {
+        max-height: calc(100vh - 20px);
+      }
+
+      h1 {
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+      }
+
+      h2 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+      }
+
+      .btn-primary {
+        min-height: 44px;
+        padding: 10px;
+      }
     }
 
-    /* === PRINT === */
     @media print {
-      body { background: white; }
-      #app-container { box-shadow: none; }
+      body {
+        background: white;
+      }
+
+      #app-container {
+        box-shadow: none;
+        max-height: none;
+      }
     }
   </style>
 </head>
 <body>
 
-<select class="language-selector" id="langSelector" onchange="setLanguage(this.value)">
+<select class="language-selector" id="langSelector" onchange="setLanguage(this.value)" aria-label="Seleziona lingua">
   <option value="it">🇮🇹 Italiano</option>
   <option value="en">🇬🇧 English</option>
 </select>
 
-<div id="app-container"></div>
-<div id="toast"></div>
+<div id="app-container" role="main"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<div id="winnerModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Chi ha vinto?</h2>
+    <div style="display: grid; gap: 8px; margin-bottom: 12px;" id="winnerOptions"></div>
+    <button class="btn-secondary" onclick="closeWinnerModal()" style="width: 100%; justify-content: center;">Annulla</button>
+  </div>
+</div>
 
 <script>
-  /* === CONFIGURAZIONE === */
-  const BIN_ID = "69272ed843b1c97be9c6cd79"; 
-  const API_KEY = "$2a$10$aMh1mO8btCVSqfcvlxvUJeJ6p.7kHJlSyKz7UjvTu2wqRAQlAcAXe"; 
+  const BIN_ID = localStorage.getItem('sports_bin_id') || "69272ed843b1c97be9c6cd79"; 
+  const API_KEY = localStorage.getItem('sports_api_key') || "INCOLLA_QUI_LA_TUA_MASTER_KEY"; 
   const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-  /* === TRADUZIONI (i18n) === */
   const TRANSLATIONS = {
     it: {
       sports_club: "Sports Club",
@@ -415,6 +701,7 @@
       available_matches: "Partite Disponibili",
       no_matches: "Nessuna partita oggi",
       join: "Unisciti",
+      share: "Condividi",
       full: "PIENO",
       players: "Giocatori",
       of: "di",
@@ -432,7 +719,6 @@
       surface: "Superficie",
       logged_in: "Benvenuto",
       login: "Accedi",
-      password: "Password",
       remember: "Ricordiamo il tuo profilo",
       change_user: "Cambia Utente",
       matches_played: "Partite",
@@ -448,7 +734,10 @@
       match_created: "Partita creata!",
       court_added: "Campo aggiunto!",
       select_time: "Seleziona orario",
-      enter_name: "Inserisci un nome"
+      enter_name: "Inserisci un nome",
+      profile: "Profilo",
+      view_profile: "Visualizza Profilo",
+      stats: "Statistiche"
     },
     en: {
       sports_club: "Sports Club",
@@ -461,6 +750,7 @@
       available_matches: "Available Matches",
       no_matches: "No matches today",
       join: "Join",
+      share: "Share",
       full: "FULL",
       players: "Players",
       of: "of",
@@ -478,7 +768,6 @@
       surface: "Surface",
       logged_in: "Welcome",
       login: "Login",
-      password: "Password",
       remember: "We remember your profile",
       change_user: "Change User",
       matches_played: "Matches",
@@ -494,40 +783,27 @@
       match_created: "Match created!",
       court_added: "Court added!",
       select_time: "Select a time",
-      enter_name: "Enter your name"
+      enter_name: "Enter your name",
+      profile: "Profile",
+      view_profile: "View Profile",
+      stats: "Statistics"
     }
   };
 
   const SPORTS_CONFIG = {
-    Tennis: {
-      icon: "🎾",
-      players: { "2 (Singolare)": 2, "4 (Doppio 2v2)": 4 },
-      surfaces: ["Terra Rossa", "Erba Sintetica", "Cemento"]
-    },
-    Basket: {
-      icon: "🏀",
-      players: { "2v2": 4, "3v3": 6, "5v5": 10 },
-      surfaces: ["Cemento", "Legno"]
-    },
-    Football: {
-      icon: "⚽",
-      players: { "5v5": 10, "7v7": 14 },
-      surfaces: ["Erba", "Erba Sintetica"]
-    },
-    Futsal: {
-      icon: "⚽",
-      players: { "3v3": 6, "5v5": 10 },
-      surfaces: ["Erba Sintetica", "Cemento"]
-    }
+    Tennis: { icon: "🎾", players: { "2 (Singolare)": 2, "4 (Doppio 2v2)": 4 }, surfaces: ["Terra Rossa", "Erba Sintetica", "Cemento"] },
+    Basket: { icon: "🏀", players: { "2v2": 4, "3v3": 6, "5v5": 10 }, surfaces: ["Cemento", "Legno"] },
+    Football: { icon: "⚽", players: { "5v5": 10, "7v7": 14 }, surfaces: ["Erba", "Erba Sintetica"] },
+    Futsal: { icon: "⚽", players: { "3v3": 6, "5v5": 10 }, surfaces: ["Erba Sintetica", "Cemento"] }
   };
 
-  /* === GLOBAL STATE === */
   let currentUser = null;
   let courts = [];
   let matches = [];
   let selectedDate = new Date();
   let selectedSport = "Tennis";
   let currentLang = localStorage.getItem('sports_lang') || 'it';
+  let currentMatchForWinner = null;
 
   const defaultCourts = [
     { id: 1, name: "Masseria San Domenico", surface: "Terra Rossa", owner: "Admin" },
@@ -535,7 +811,6 @@
     { id: 3, name: "Cisternino Hillside", surface: "Cemento", owner: "Admin" }
   ];
 
-  /* === HELPER FUNCTIONS === */
   function t(key) {
     return TRANSLATIONS[currentLang]?.[key] || TRANSLATIONS['en'][key] || key;
   }
@@ -551,8 +826,8 @@
   function showToast(msg) {
     const toast = document.getElementById("toast");
     toast.textContent = msg;
-    toast.className = "show";
-    setTimeout(() => toast.className = "", 3000);
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
   }
 
   function formatDate(date) {
@@ -571,7 +846,7 @@
 
   async function loadData() {
     try {
-      const res = await fetch(API_URL, { headers: { "X-Master-Key": API_KEY } });
+      const res = await fetch(API_URL, { headers: { "X-Master-Key": API_KEY }, signal: AbortSignal.timeout(5000) });
       if (!res.ok) throw new Error("API Error");
       const data = await res.json();
       if (data.record) {
@@ -580,7 +855,7 @@
       }
       if (courts.length === 0) courts = defaultCourts;
     } catch (err) {
-      showToast(t('error_connection'));
+      console.warn("Load error:", err);
       courts = defaultCourts;
       matches = [];
     }
@@ -591,10 +866,11 @@
       await fetch(API_URL, {
         method: "PUT",
         headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
-        body: JSON.stringify({ matches, courts })
+        body: JSON.stringify({ matches, courts }),
+        signal: AbortSignal.timeout(5000)
       });
     } catch (err) {
-      showToast(t('error_save'));
+      console.warn("Save error:", err);
     }
   }
 
@@ -610,13 +886,12 @@
   }
 
   function canCreateMatch(courtId, time, date, sport) {
-    const sameSlot = matches.filter(m => m.courtId === parseInt(courtId) && m.time === time && m.date === date && m.sport === sport);
-    return sameSlot.length < 2;
+    return matches.filter(m => m.courtId === parseInt(courtId) && m.time === time && m.date === date && m.sport === sport).length < 2;
   }
 
   function getPlayerStats(playerName) {
-    const playerMatches = matches.filter(m => m.players && m.players.includes(playerName));
-    const wins = Math.floor(playerMatches.length * 0.6);
+    const playerMatches = matches.filter(m => m.players?.includes(playerName)) || [];
+    const wins = matches.filter(m => m.winner === playerName).length;
     const losses = playerMatches.length - wins;
     return {
       totalMatches: playerMatches.length,
@@ -626,20 +901,63 @@
     };
   }
 
-  /* === VIEWS === */
+  function shareMatch(matchId) {
+    const match = matches.find(m => m.id === matchId);
+    if (!match) return;
+
+    const court = courts.find(c => c.id === match.courtId) || { name: "?" };
+    const sportIcon = SPORTS_CONFIG[match.sport]?.icon || "⚽";
+    const shareText = `${t('join')} ${match.sport}! ${sportIcon}\n${t('court')}: ${court.name}\n${t('time')}: ${match.time}`;
+
+    if (navigator.share) {
+      navigator.share({ title: `Valle d'Itria ${match.sport}`, text: shareText }).catch(() => {});
+    } else {
+      showToast("Share non disponibile");
+    }
+  }
+
+  function openWinnerModal(matchId) {
+    currentMatchForWinner = matchId;
+    const match = matches.find(m => m.id === matchId);
+    if (!match) return;
+
+    document.getElementById('winnerOptions').innerHTML = match.players.map(player => `
+      <button class="btn-primary" onclick="setWinner(${matchId}, '${player}')" style="margin-bottom: 0;">🏆 ${player}</button>
+    `).join('');
+
+    document.getElementById('winnerModal').classList.add("show");
+  }
+
+  function closeWinnerModal() {
+    document.getElementById('winnerModal').classList.remove("show");
+    currentMatchForWinner = null;
+  }
+
+  async function setWinner(matchId, winnerName) {
+    const match = matches.find(m => m.id === matchId);
+    if (match) {
+      match.winner = winnerName;
+      match.completed = true;
+      await saveData();
+      closeWinnerModal();
+      showToast(`${winnerName} ${t('wins')}! 🏆`);
+      navigate('matches');
+    }
+  }
+
   const app = document.getElementById('app-container');
 
   function navigate(view) {
     localStorage.setItem('current_view', view);
     app.style.opacity = '0';
     app.style.transform = 'translateY(10px)';
-    
+
     setTimeout(async () => {
       if (view === 'home') renderHome();
-      if (view === 'matches') { 
+      if (view === 'matches') {
         app.innerHTML = `<p style="text-align:center; padding:40px 0;">${t('calendar')}...</p>`;
         await loadData();
-        renderMatches(); 
+        renderMatches();
       }
       if (view === 'create') {
         await loadData();
@@ -647,8 +965,9 @@
       }
       if (view === 'add-court') renderAddCourt();
       if (view === 'stats') renderStats();
+      if (view === 'profile') renderProfile();
       if (view === 'login') renderLogin();
-      
+
       app.style.opacity = '1';
       app.style.transform = 'translateY(0)';
       app.style.transition = 'all 0.3s ease';
@@ -675,9 +994,9 @@
   async function createMatch(courtId, time, maxPlayers, hostParticipates, sport) {
     if (!currentUser) return navigate('login');
     const dateStr = formatDate(selectedDate);
-    if (!canCreateMatch(courtId, time, dateStr, sport)) return showToast("Slot occupied");
-    
-    const newMatch = {
+    if (!canCreateMatch(courtId, time, dateStr, sport)) return showToast("Slot occupato");
+
+    matches.push({
       id: Date.now(),
       courtId: parseInt(courtId),
       sport: sport,
@@ -685,23 +1004,23 @@
       time: time,
       players: hostParticipates ? [currentUser.name] : [],
       maxPlayers: parseInt(maxPlayers),
-      createdBy: currentUser.name
-    };
-    
-    matches.push(newMatch);
+      createdBy: currentUser.name,
+      winner: null,
+      completed: false
+    });
+
     showToast(t('match_created'));
     await saveData();
     navigate('matches');
   }
 
   async function addNewCourt(name, surface) {
-    const newCourt = {
+    courts.push({
       id: Date.now(),
       name: name,
       surface: surface,
       owner: currentUser.name
-    };
-    courts.push(newCourt);
+    });
     showToast(t('court_added'));
     await saveData();
     navigate('home');
@@ -709,16 +1028,18 @@
 
   function renderLogin() {
     app.innerHTML = `
-      <div style="text-align:center; padding:20px;">
-        <h1>🎾⚽🏀 ${t('sports_club')}</h1>
-        <p style="margin:20px 0;">Valle d'Itria</p>
-        
+      <div style="text-align:center; padding: max(20px, 1.5rem);">
+        <h1>🎾⚽🏀</h1>
+        <h2 style="margin-bottom: 4px;">${t('sports_club')}</h2>
+        <p style="margin-bottom: 20px;">Valle d'Itria</p>
+
         <form onsubmit="event.preventDefault(); handleLogin();">
-          <input type="text" id="usernameInput" placeholder="${t('name')}" style="margin-bottom:16px;">
+          <label for="usernameInput" class="subtitle">${t('name')}</label>
+          <input type="text" id="usernameInput" placeholder="Es. Mario Rossi" autocomplete="name">
           <button type="submit" class="btn-primary">${t('login')}</button>
         </form>
-        
-        <p style="font-size:0.8rem; opacity:0.5; margin-top:16px;">${t('remember')}</p>
+
+        <p style="font-size:0.8rem; opacity:0.5; margin-top:20px;">${t('remember')}</p>
       </div>
     `;
     document.getElementById('usernameInput')?.focus();
@@ -733,32 +1054,21 @@
 
   function renderHome() {
     app.innerHTML = `
-      ${currentUser ? `<div class="user-info"><div class="user-avatar"></div><div><strong>${currentUser.name}</strong></div></div>` : ''}
-      
+      ${currentUser ? `<div class="user-info"><div class="user-avatar">${currentUser.name[0].toUpperCase()}</div><div><strong>${currentUser.name}</strong><br><a style="cursor:pointer;" onclick="navigate('profile')">${t('view_profile')}</a></div></div>` : ''}
+
       <div style="text-align:center; margin-bottom:20px;">
         <span class="subtitle">${t('calendar')}</span>
         <h1>${t('book_now')}</h1>
       </div>
-      
+
       <div style="display:grid; gap:10px;">
-        <button class="btn-primary" onclick="navigate('matches')" style="background: var(--text-main);">
-          👥 ${t('find_matches')}
-        </button>
-        
-        <button class="btn-primary" onclick="navigate('create')" style="background: var(--accent);">
-          📅 ${t('create_match')}
-        </button>
-        
-        <button class="btn-primary" onclick="navigate('add-court')" style="background: rgba(26, 46, 26, 0.7);">
-          ➕ ${t('add_court')}
-        </button>
-        
-        <button class="btn-primary" onclick="navigate('stats')" style="background: rgba(212, 163, 115, 0.8);">
-          📊 ${t('my_stats')}
-        </button>
+        <button class="btn-primary" onclick="navigate('matches')" style="background: var(--text-main);">👥 ${t('find_matches')}</button>
+        <button class="btn-primary" onclick="navigate('create')" style="background: var(--accent);">📅 ${t('create_match')}</button>
+        <button class="btn-primary" onclick="navigate('add-court')" style="background: rgba(26, 46, 26, 0.7);">➕ ${t('add_court')}</button>
+        <button class="btn-primary" onclick="navigate('stats')" style="background: rgba(212, 163, 115, 0.8);">📊 ${t('my_stats')}</button>
       </div>
-      
-      ${currentUser ? `<button class="btn-secondary" onclick="localStorage.removeItem('sports_username'); currentUser = null; navigate('login')" style="margin-top:20px; width:100%; justify-content:center;">${t('change_user')}</button>` : ''}
+
+      ${currentUser ? `<button class="btn-secondary" onclick="localStorage.removeItem('sports_username'); currentUser = null; navigate('login')" style="width:100%; justify-content:center; margin-top:20px;">${t('change_user')}</button>` : ''}
     `;
   }
 
@@ -770,7 +1080,7 @@
       const dateStr = formatDate(date);
       const isActive = formatDate(selectedDate) === dateStr;
       const dayName = getDayName(date);
-      
+
       calendarHtml += `
         <button class="day-btn ${isActive ? 'active' : ''}" onclick="selectDate(new Date('${dateStr}T00:00')); renderMatches()">
           <span class="day-label">${dayName}</span>
@@ -781,24 +1091,28 @@
     calendarHtml += '</div>';
 
     const dateStr = formatDate(selectedDate);
-    const todayMatches = matches.filter(m => m.date === dateStr);
-    const pastMatches = matches.filter(m => new Date(m.date) < new Date(dateStr));
+    const todayMatches = matches.filter(m => m.date === dateStr && !m.completed);
+    const pastMatches = matches.filter(m => m.date < dateStr || m.completed);
 
-    let cardsHtml = todayMatches.length === 0 
+    let cardsHtml = todayMatches.length === 0
       ? `<div class="match-card" style="text-align:center;"><p>${t('no_matches')}</p></div>`
       : todayMatches.map(m => {
-        const court = courts.find(c => c.id === m.courtId) || {name: "?", surface: "?"};
+        const court = courts.find(c => c.id === m.courtId) || { name: "?" };
         const isFull = m.players.length >= m.maxPlayers;
         const sportIcon = SPORTS_CONFIG[m.sport]?.icon || "⚽";
-        
+
         return `
           <div class="match-card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <div class="match-header">
               <div><span class="sport-icon">${sportIcon}</span><strong>${m.sport}</strong> • ${m.time}</div>
-              ${!isFull ? `<button class="btn-small" onclick="joinMatch(${m.id})">${t('join')}</button>` : `<small style="color:var(--accent);">${t('full')}</small>`}
+              <button class="btn-share" onclick="shareMatch(${m.id})">📤</button>
             </div>
-            <div style="opacity:0.7; font-size:0.85rem;">@ ${court.name}</div>
-            <p style="margin:8px 0 0 0; font-size:0.85rem;">${t('players')} (${m.players.length}/${m.maxPlayers}): ${m.players.join(", ")}</p>
+            <div style="opacity:0.7; font-size:0.85rem; margin-bottom: 8px;">@ ${court.name}</div>
+            <p style="margin:0 0 10px 0; font-size:0.85rem;">${t('players')} (${m.players.length}/${m.maxPlayers}): ${m.players.join(", ")}</p>
+            <div style="display:flex; gap:8px;">
+              ${!isFull ? `<button class="btn-small" onclick="joinMatch(${m.id})">${t('join')}</button>` : `<span style="color:var(--accent); font-weight:600;">${t('full')}</span>`}
+              ${m.players.includes(currentUser?.name) ? `<button class="btn-small" onclick="openWinnerModal(${m.id})">🏆</button>` : ''}
+            </div>
           </div>
         `;
       }).join('');
@@ -806,15 +1120,16 @@
     let archiveHtml = '';
     if (pastMatches.length > 0) {
       const archiveCards = pastMatches.map(m => {
-        const court = courts.find(c => c.id === m.courtId) || {name: "?", surface: "?"};
+        const court = courts.find(c => c.id === m.courtId) || { name: "?" };
         const sportIcon = SPORTS_CONFIG[m.sport]?.icon || "⚽";
-        
+
         return `
           <div class="match-card" style="opacity:0.7;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
               <div><span class="sport-icon">${sportIcon}</span><strong>${m.sport}</strong> • ${m.time}</div>
               <small style="color:var(--text-muted);">${m.date}</small>
             </div>
+            ${m.winner ? `<div style="color:var(--accent); font-weight:600; margin-bottom:5px;">🏆 ${m.winner}</div>` : ''}
             <p style="margin:0; font-size:0.85rem;">@ ${court.name}</p>
           </div>
         `;
@@ -824,7 +1139,7 @@
         <div class="accordion">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             📋 ${t('past_matches')} (${pastMatches.length})
-            <span style="font-size:1.2rem;">▼</span>
+            <span>▼</span>
           </div>
           <div class="accordion-content">
             ${archiveCards}
@@ -842,17 +1157,14 @@
     `;
   }
 
-  window.selectDate = function(date) {
-    selectedDate = date;
-  }
-
-  window.toggleAccordion = function(header) {
-    header.classList.toggle('open');
-    header.nextElementSibling.classList.toggle('open');
-  }
+  window.selectDate = (date) => { selectedDate = date; };
+  window.toggleAccordion = (header) => {
+    header.classList.toggle("open");
+    header.nextElementSibling.classList.toggle("open");
+  };
 
   function renderCreate() {
-    if (!courts || courts.length === 0) {
+    if (!courts?.length) {
       app.innerHTML = `<button class="btn-secondary" onclick="navigate('home')">← ${t('home')}</button><p>${t('calendar')}...</p>`;
       return;
     }
@@ -861,79 +1173,78 @@
     const sportOptions = sportList.map(s => `<option value="${s}">${SPORTS_CONFIG[s].icon} ${s}</option>`).join('');
     const courtOptions = courts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     const dateStr = formatDate(selectedDate);
-    
+
     const playersConfig = SPORTS_CONFIG[selectedSport].players;
     const playerOptions = Object.entries(playersConfig).map(([label, count]) => `<option value="${count}">${label}</option>`).join('');
-    
+
     app.innerHTML = `
       <button class="btn-secondary" onclick="navigate('home')">← ${t('home')}</button>
       <h2>${t('create_match')}</h2>
-      
+
       <div class="date-modifier">
-        <button onclick="changeDate(-1)">← ${t('back')}</button>
-        <div style="flex:2; text-align:center; padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; font-weight:500;">${dateStr}</div>
-        <button onclick="changeDate(1)">Avanti →</button>
+        <button onclick="changeDate(-1)">←</button>
+        <div style="text-align:center; background:rgba(0,0,0,0.05); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:500;">${dateStr}</div>
+        <button onclick="changeDate(1)">→</button>
       </div>
-      
+
       <form onsubmit="event.preventDefault(); handleCreateMatch();">
-        <label class="subtitle">${t('sport')}</label>
+        <label for="sportSelect" class="subtitle">${t('sport')}</label>
         <select id="sportSelect" onchange="updateSportDetails()">${sportOptions}</select>
-        
-        <label class="subtitle">${t('court')}</label>
+
+        <label for="courtSelect" class="subtitle">${t('court')}</label>
         <select id="courtSelect">${courtOptions}</select>
-        
-        <label class="subtitle">${t('time')}</label>
+
+        <label for="timeInput" class="subtitle">${t('time')}</label>
         <input type="time" id="timeInput" value="18:00">
-        
-        <label class="subtitle">${t('num_players')}</label>
+
+        <label for="maxPlayersSelect" class="subtitle">${t('num_players')}</label>
         <select id="maxPlayersSelect">${playerOptions}</select>
-        
+
         <div class="checkbox-group">
           <input type="checkbox" id="hostParticipates" checked>
-          <label for="hostParticipates" style="margin:0; font-size:0.95rem;">${t('i_participate')}</label>
+          <label for="hostParticipates">${t('i_participate')}</label>
         </div>
-        
+
         <button type="submit" class="btn-primary">${t('confirm')}</button>
       </form>
     `;
-    
+
     document.getElementById('sportSelect').value = selectedSport;
   }
 
-  window.changeDate = function(days) {
+  window.changeDate = (days) => {
     selectedDate.setDate(selectedDate.getDate() + days);
     renderCreate();
-  }
+  };
 
-  window.updateSportDetails = function() {
-    const sportSelect = document.getElementById('sportSelect');
-    selectedSport = sportSelect.value;
+  window.updateSportDetails = () => {
+    selectedSport = document.getElementById('sportSelect').value;
     const playersConfig = SPORTS_CONFIG[selectedSport].players;
     const playerOptions = Object.entries(playersConfig).map(([label, count]) => `<option value="${count}">${label}</option>`).join('');
     document.getElementById('maxPlayersSelect').innerHTML = playerOptions;
-  }
+  };
 
-  window.handleCreateMatch = function() {
+  window.handleCreateMatch = () => {
     const sport = document.getElementById('sportSelect').value;
     const courtId = document.getElementById('courtSelect').value;
     const time = document.getElementById('timeInput').value;
     const maxPlayers = document.getElementById('maxPlayersSelect').value;
     const hostParticipates = document.getElementById('hostParticipates').checked;
-    
+
     if (!time) return showToast(t('select_time'));
     createMatch(courtId, time, maxPlayers, hostParticipates, sport);
-  }
+  };
 
   function renderAddCourt() {
     app.innerHTML = `
       <button class="btn-secondary" onclick="navigate('home')">← ${t('home')}</button>
       <h2>${t('add_court')}</h2>
-      
+
       <form onsubmit="event.preventDefault(); handleAddCourt();">
-        <label class="subtitle">${t('name')}</label>
+        <label for="courtName" class="subtitle">${t('name')}</label>
         <input type="text" id="courtName" placeholder="Masseria...">
-        
-        <label class="subtitle">${t('surface')}</label>
+
+        <label for="courtSurface" class="subtitle">${t('surface')}</label>
         <select id="courtSurface">
           <option>Terra Rossa</option>
           <option>Erba Sintetica</option>
@@ -941,42 +1252,42 @@
           <option>Legno</option>
           <option>Erba</option>
         </select>
-        
+
         <button type="submit" class="btn-primary">${t('add')}</button>
       </form>
     `;
   }
 
-  window.handleAddCourt = function() {
+  window.handleAddCourt = () => {
     const name = document.getElementById('courtName').value;
     const surface = document.getElementById('courtSurface').value;
     if (!name) return showToast(t('enter_name'));
     addNewCourt(name, surface);
-  }
+  };
 
   function renderStats() {
     if (!currentUser) return navigate('login');
     const stats = getPlayerStats(currentUser.name);
-    
+
     app.innerHTML = `
       <button class="btn-secondary" onclick="navigate('home')">← ${t('home')}</button>
       <h2>${t('my_stats')}</h2>
-      
+
       <div class="stat-card">
         <strong>${stats.totalMatches}</strong>
         <p>${t('matches_played')}</p>
       </div>
-      
+
       <div class="stat-card">
         <strong>${stats.wins}</strong>
         <p>${t('wins')} 🏆</p>
       </div>
-      
+
       <div class="stat-card">
         <strong>${stats.losses}</strong>
         <p>${t('losses')}</p>
       </div>
-      
+
       <div class="stat-card">
         <strong>${stats.winRate}%</strong>
         <p>${t('win_rate')}</p>
@@ -984,7 +1295,59 @@
     `;
   }
 
-  // Init
+  function renderProfile() {
+    if (!currentUser) return navigate('login');
+    const stats = getPlayerStats(currentUser.name);
+    const userMatches = matches.filter(m => m.players?.includes(currentUser.name)) || [];
+
+    app.innerHTML = `
+      <button class="btn-secondary" onclick="navigate('home')">← ${t('home')}</button>
+
+      <div class="profile-header">
+        <div class="profile-avatar">${currentUser.name[0].toUpperCase()}</div>
+        <h2>${currentUser.name}</h2>
+        <p style="margin:0; opacity:0.7;">Giocatore dal 2025</p>
+      </div>
+
+      <h3>📊 ${t('stats')}</h3>
+
+      <div class="stat-card">
+        <strong>${stats.totalMatches}</strong>
+        <p>${t('matches_played')}</p>
+      </div>
+
+      <div class="stat-card">
+        <strong>${stats.wins}</strong>
+        <p>${t('wins')} 🏆</p>
+      </div>
+
+      <div class="stat-card">
+        <strong>${stats.losses}</strong>
+        <p>${t('losses')}</p>
+      </div>
+
+      <div class="stat-card">
+        <strong>${stats.winRate}%</strong>
+        <p>${t('win_rate')}</p>
+      </div>
+
+      <h3 style="margin-top: 20px;">🏟️ Ultime Partite</h3>
+      ${userMatches.slice(-5).reverse().map(m => {
+        const court = courts.find(c => c.id === m.courtId) || { name: "?" };
+        const sportIcon = SPORTS_CONFIG[m.sport]?.icon || "⚽";
+        return `
+          <div class="match-card" style="opacity:0.8;">
+            <div style="display:flex; justify-content:space-between; gap:8px;">
+              <span><strong>${sportIcon} ${m.sport}</strong> @ ${court.name}</span>
+              <small style="white-space:nowrap;">${m.date}</small>
+            </div>
+            ${m.winner === currentUser.name ? '<div style="color:var(--accent); font-weight:600; margin-top:8px;">🏆 Vittoria!</div>' : m.winner ? '<div style="color:#999; margin-top:8px;">Sconfitta</div>' : ''}
+          </div>
+        `;
+      }).join('') || `<p>${t('no_matches')}</p>`}
+    `;
+  }
+
   (async () => {
     document.getElementById('langSelector').value = currentLang;
     document.documentElement.lang = currentLang;
@@ -993,6 +1356,11 @@
     if (saved) navigate('home');
     else navigate('login');
   })();
+
+  window.openWinnerModal = openWinnerModal;
+  window.closeWinnerModal = closeWinnerModal;
+  window.setWinner = setWinner;
+  window.shareMatch = shareMatch;
 
 </script>
 </body>
