@@ -267,9 +267,29 @@
       margin-bottom: 16px;
     }
 
-    .user-info > div { flex: 1; min-width: 0; }
-    .user-info strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .user-info a { color: var(--accent); text-decoration: none; cursor: pointer; font-size: 0.85rem; }
+    .user-info > div {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .user-info strong {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 1rem;
+    }
+
+    .user-info a {
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
 
     .profile-header {
       text-align: center;
@@ -437,29 +457,33 @@
       margin-bottom: 0;
     }
 
-    /* === LANGUAGE SELECTOR BASSO DESTRA === */
+    /* === LANGUAGE SELECTOR RESPONSIVE === */
     .language-selector {
       position: fixed;
       bottom: 20px;
       right: 20px;
       background: var(--accent);
       border: none;
-      padding: 10px 14px;
+      padding: 8px 10px;
       border-radius: 50px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       cursor: pointer;
-      min-height: 44px;
+      min-height: 40px;
+      min-width: 40px;
       z-index: 100;
       box-shadow: var(--shadow-lg);
       color: white;
       font-weight: 600;
       transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .language-selector:hover { background: var(--accent-hover); transform: translateY(-2px); }
     .language-selector:focus-visible { outline: 2px solid var(--text-main); outline-offset: 2px; }
 
-    /* === CAROUSEL IMMAGINI BASSO === */
+    /* === CAROUSEL IMMAGINI === */
     .carousel-container {
       position: fixed;
       bottom: 0;
@@ -519,6 +543,22 @@
       display: block;
     }
 
+    /* === MOBILE OPTIMIZATIONS === */
+    @media (max-width: 480px) {
+      .language-selector {
+        bottom: 16px;
+        right: 16px;
+        padding: 6px 8px;
+        min-height: 36px;
+        min-width: 36px;
+        font-size: 0.75rem;
+      }
+
+      #app-container {
+        margin-bottom: 50px;
+      }
+    }
+
     @media (max-height: 600px) {
       #app-container { max-height: none; border-radius: 20px; }
       body { align-items: flex-start; padding-top: 12px; padding-bottom: 12px; }
@@ -530,6 +570,22 @@
       .btn-primary { font-size: 0.95rem; min-height: 44px; }
       .stat-card strong { font-size: 1.6rem; }
       .day-btn { min-height: 44px; font-size: 0.7rem; }
+      
+      .user-info > div {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .user-info strong {
+        white-space: nowrap;
+        font-size: 0.95rem;
+      }
+
+      .user-info a {
+        white-space: nowrap;
+        font-size: 0.75rem;
+      }
     }
 
     @media (orientation: landscape) and (max-height: 500px) {
@@ -560,6 +616,29 @@
   <ul class="carousel" id="carousel"></ul>
 </div>
 
+<!-- MODAL AGGIUNGI CAMPO -->
+<div id="addCourtModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Aggiungi Campo</h2>
+    <form onsubmit="event.preventDefault(); handleAddCourt();">
+      <label for="modalCourtName" class="subtitle">NOME</label>
+      <input type="text" id="modalCourtName" placeholder="Masseria...">
+
+      <label for="modalCourtSurface" class="subtitle">SUPERFICIE</label>
+      <select id="modalCourtSurface">
+        <option>Terra Rossa</option>
+        <option>Erba Sintetica</option>
+        <option>Cemento</option>
+        <option>Legno</option>
+        <option>Erba</option>
+      </select>
+
+      <button type="submit" class="btn-primary" style="margin-bottom: 0;">Aggiungi</button>
+    </form>
+    <button class="btn-secondary" onclick="closeAddCourtModal()" style="width: 100%; justify-content: center; margin-top: 12px;">Annulla</button>
+  </div>
+</div>
+
 <div id="winnerModal" class="modal-overlay">
   <div class="modal-content">
     <h2>Chi ha vinto?</h2>
@@ -580,7 +659,6 @@
       book_now: "Prenota il Campo",
       find_matches: "Trova Partita",
       create_match: "Crea Partita",
-      add_court: "Aggiungi Campo",
       my_stats: "Le Mie Stats",
       available_matches: "Partite Disponibili",
       no_matches: "Nessuna partita oggi",
@@ -623,7 +701,8 @@
       profile: "Profilo",
       view_profile: "Visualizza Profilo",
       stats: "Statistiche",
-      left_match: "Sei uscito dalla partita"
+      left_match: "Sei uscito dalla partita",
+      add_new_court: "➕ Aggiungi Campo"
     },
     en: {
       sports_club: "Sports Club",
@@ -631,7 +710,6 @@
       book_now: "Book a Court",
       find_matches: "Find Match",
       create_match: "Create Match",
-      add_court: "Add Court",
       my_stats: "My Stats",
       available_matches: "Available Matches",
       no_matches: "No matches today",
@@ -674,7 +752,8 @@
       profile: "Profile",
       view_profile: "View Profile",
       stats: "Statistics",
-      left_match: "You left the match"
+      left_match: "You left the match",
+      add_new_court: "➕ Add Court"
     }
   };
 
@@ -846,6 +925,33 @@
     }
   }
 
+  function openAddCourtModal() {
+    document.getElementById('addCourtModal').classList.add("show");
+    document.getElementById('modalCourtName').focus();
+  }
+
+  function closeAddCourtModal() {
+    document.getElementById('addCourtModal').classList.remove("show");
+    document.getElementById('modalCourtName').value = '';
+  }
+
+  async function handleAddCourt() {
+    const name = document.getElementById('modalCourtName').value.trim();
+    const surface = document.getElementById('modalCourtSurface').value;
+    if (!name) return showToast(t('enter_name'));
+
+    courts.push({
+      id: Date.now(),
+      name: name,
+      surface: surface,
+      owner: currentUser?.name || 'User'
+    });
+
+    showToast(t('court_added'));
+    await saveData();
+    closeAddCourtModal();
+  }
+
   function updateCarousel() {
     const container = document.getElementById('carouselContainer');
     const carousel = document.getElementById('carousel');
@@ -864,12 +970,11 @@
     container.classList.add('active');
   }
 
-  // Carica immagini dal localStorage (per demo)
   window.addCarouselImage = function(imageUrl) {
     carouselImages.push(imageUrl);
     localStorage.setItem('carousel_images', JSON.stringify(carouselImages));
     updateCarousel();
-    showToast("Immagine aggiunta al carousel");
+    showToast("Immagine aggiunta");
   }
 
   const app = document.getElementById('app-container');
@@ -890,7 +995,6 @@
         await loadData();
         renderCreate();
       }
-      if (view === 'add-court') renderAddCourt();
       if (view === 'stats') renderStats();
       if (view === 'profile') renderProfile();
       if (view === 'login') renderLogin();
@@ -941,18 +1045,6 @@
     navigate('matches');
   }
 
-  async function addNewCourt(name, surface) {
-    courts.push({
-      id: Date.now(),
-      name: name,
-      surface: surface,
-      owner: currentUser.name
-    });
-    showToast(t('court_added'));
-    await saveData();
-    navigate('home');
-  }
-
   function renderLogin() {
     app.innerHTML = `
       <div style="text-align:center; padding: max(20px, 1.5rem);">
@@ -981,7 +1073,7 @@
 
   function renderHome() {
     app.innerHTML = `
-      ${currentUser ? `<div class="user-info"><div><strong>${currentUser.name}</strong><br><a style="cursor:pointer;" onclick="navigate('profile')">${t('view_profile')}</a></div></div>` : ''}
+      ${currentUser ? `<div class="user-info"><div><strong>${currentUser.name}</strong><a style="cursor:pointer;" onclick="navigate('profile')">${t('view_profile')}</a></div></div>` : ''}
 
       <div style="text-align:center; margin-bottom:20px;">
         <span class="subtitle">${t('calendar')}</span>
@@ -991,7 +1083,6 @@
       <div style="display:grid; gap:10px;">
         <button class="btn-primary" onclick="navigate('matches')" style="background: var(--text-main);">👥 ${t('find_matches')}</button>
         <button class="btn-primary" onclick="navigate('create')" style="background: var(--accent);">📅 ${t('create_match')}</button>
-        <button class="btn-primary" onclick="navigate('add-court')" style="background: rgba(26, 46, 26, 0.7);">➕ ${t('add_court')}</button>
         <button class="btn-primary" onclick="navigate('stats')" style="background: rgba(212, 163, 115, 0.8);">📊 ${t('my_stats')}</button>
       </div>
 
@@ -1100,7 +1191,11 @@
 
     const sportList = Object.keys(SPORTS_CONFIG);
     const sportOptions = sportList.map(s => `<option value="${s}">${SPORTS_CONFIG[s].icon} ${s}</option>`).join('');
+    
+    // Opzioni campi + aggiungi nuovo
     const courtOptions = courts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    const courtOptionsWithAdd = courtOptions + `<option value="ADD_NEW" style="color:#d4a373;">➕ ${t('add_new_court')}</option>`;
+    
     const dateStr = formatDate(selectedDate);
 
     const playersConfig = SPORTS_CONFIG[selectedSport].players;
@@ -1121,7 +1216,7 @@
         <select id="sportSelect" onchange="updateSportDetails()">${sportOptions}</select>
 
         <label for="courtSelect" class="subtitle">${t('court')}</label>
-        <select id="courtSelect">${courtOptions}</select>
+        <select id="courtSelect" onchange="handleCourtSelect()">${courtOptionsWithAdd}</select>
 
         <label for="timeInput" class="subtitle">${t('time')}</label>
         <input type="time" id="timeInput" value="18:00">
@@ -1139,6 +1234,14 @@
     `;
 
     document.getElementById('sportSelect').value = selectedSport;
+  }
+
+  window.handleCourtSelect = () => {
+    const courtSelect = document.getElementById('courtSelect');
+    if (courtSelect.value === 'ADD_NEW') {
+      courtSelect.value = '';
+      openAddCourtModal();
+    }
   }
 
   window.changeDate = (days) => {
@@ -1161,37 +1264,8 @@
     const hostParticipates = document.getElementById('hostParticipates').checked;
 
     if (!time) return showToast(t('select_time'));
+    if (!courtId || courtId === 'ADD_NEW') return showToast(t('select_time'));
     createMatch(courtId, time, maxPlayers, hostParticipates, sport);
-  };
-
-  function renderAddCourt() {
-    app.innerHTML = `
-      <button class="btn-secondary" onclick="navigate('home')">← ${t('home')}</button>
-      <h2>${t('add_court')}</h2>
-
-      <form onsubmit="event.preventDefault(); handleAddCourt();">
-        <label for="courtName" class="subtitle">${t('name')}</label>
-        <input type="text" id="courtName" placeholder="Masseria...">
-
-        <label for="courtSurface" class="subtitle">${t('surface')}</label>
-        <select id="courtSurface">
-          <option>Terra Rossa</option>
-          <option>Erba Sintetica</option>
-          <option>Cemento</option>
-          <option>Legno</option>
-          <option>Erba</option>
-        </select>
-
-        <button type="submit" class="btn-primary">${t('add')}</button>
-      </form>
-    `;
-  }
-
-  window.handleAddCourt = () => {
-    const name = document.getElementById('courtName').value;
-    const surface = document.getElementById('courtSurface').value;
-    if (!name) return showToast(t('enter_name'));
-    addNewCourt(name, surface);
   };
 
   function renderStats() {
@@ -1291,6 +1365,8 @@
   window.closeWinnerModal = closeWinnerModal;
   window.setWinner = setWinner;
   window.shareMatch = shareMatch;
+  window.openAddCourtModal = openAddCourtModal;
+  window.closeAddCourtModal = closeAddCourtModal;
 
 </script>
 </body>
