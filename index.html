@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Valle d'Itria Tennis Club</title>
+  <title>Valle d'Itria Sports Club</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -151,6 +151,12 @@
     }
     .match-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.9); }
 
+    .sport-icon {
+      display: inline-block;
+      font-size: 1.2rem;
+      margin-right: 5px;
+    }
+
     .stat-card {
       background: rgba(212, 163, 115, 0.1);
       border: 1px solid rgba(212, 163, 115, 0.3);
@@ -174,7 +180,6 @@
 
     .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); }
 
-    /* CALENDARIO STILI */
     .calendar-week {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -205,7 +210,6 @@
     .day-label { font-size: 0.7rem; opacity: 0.6; display: block; }
     .day-number { font-size: 1rem; display: block; margin-top: 3px; }
 
-    /* ACCORDION STILI */
     .accordion {
       margin-top: 20px;
     }
@@ -272,6 +276,22 @@
       margin: 0;
     }
 
+    .date-modifier {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .date-modifier button {
+      flex: 1;
+      padding: 10px;
+      background: rgba(0,0,0,0.05);
+      color: var(--text-main);
+      border-radius: 8px;
+      font-weight: 500;
+      width: auto;
+    }
+
   </style>
 </head>
 <body>
@@ -285,11 +305,36 @@
   const API_KEY = "INCOLLA_QUI_LA_TUA_MASTER_KEY"; 
   const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
+  /* --- SPORT SPECIFICHE --- */
+  const SPORTS_CONFIG = {
+    Tennis: {
+      icon: "🎾",
+      players: { "2 (Singolare)": 2, "4 (Doppio 2v2)": 4 },
+      surfaces: ["Terra Rossa", "Erba Sintetica", "Cemento"]
+    },
+    Basket: {
+      icon: "🏀",
+      players: { "2v2": 4, "3v3": 6, "5v5": 10 },
+      surfaces: ["Cemento", "Legno"]
+    },
+    Calcio: {
+      icon: "⚽",
+      players: { "5v5": 10, "7v7": 14 },
+      surfaces: ["Erba", "Erba Sintetica"]
+    },
+    Calcetto: {
+      icon: "⚽",
+      players: { "3v3": 6, "5v5": 10 },
+      surfaces: ["Erba Sintetica", "Cemento"]
+    }
+  };
+
   /* --- GLOBAL STATE --- */
   let currentUser = null;
   let courts = [];
   let matches = [];
   let selectedDate = new Date();
+  let selectedSport = "Tennis";
 
   const defaultCourts = [
     { id: 1, name: "Masseria San Domenico", surface: "Terra Rossa", owner: "Admin" },
@@ -348,7 +393,6 @@
     }
   }
 
-  /* --- localStorage per username --- */
   function saveUsername(name) {
     localStorage.setItem('tennis_username', name);
     currentUser = { name };
@@ -360,8 +404,8 @@
     return saved;
   }
 
-  function canCreateMatch(courtId, time, date) {
-    const sameSlot = matches.filter(m => m.courtId === parseInt(courtId) && m.time === time && m.date === date);
+  function canCreateMatch(courtId, time, date, sport) {
+    const sameSlot = matches.filter(m => m.courtId === parseInt(courtId) && m.time === time && m.date === date && m.sport === sport);
     return sameSlot.length < 2;
   }
 
@@ -423,14 +467,15 @@
     }
   }
 
-  async function createMatch(courtId, time, maxPlayers, hostParticipates) {
+  async function createMatch(courtId, time, maxPlayers, hostParticipates, sport) {
     if (!currentUser) return navigate('login');
     const dateStr = formatDate(selectedDate);
-    if (!canCreateMatch(courtId, time, dateStr)) return showToast("Slot occupato (max 2)");
+    if (!canCreateMatch(courtId, time, dateStr, sport)) return showToast("Slot occupato (max 2)");
     
     const newMatch = {
       id: Date.now(),
       courtId: parseInt(courtId),
+      sport: sport,
       date: dateStr,
       time: time,
       players: hostParticipates ? [currentUser.name] : [],
@@ -461,7 +506,7 @@
   function renderLogin() {
     app.innerHTML = `
       <div style="text-align:center; padding:30px;">
-        <h1>🎾 Tennis Club</h1>
+        <h1>🎾⚽🏀 Sports Club</h1>
         <p style="margin:30px 0;">Valle d'Itria</p>
         
         <form onsubmit="event.preventDefault(); handleLogin();">
@@ -514,7 +559,6 @@
   }
 
   function renderMatches() {
-    // Calendario interattivo con 7 giorni
     let calendarHtml = '<div class="calendar-week">';
     for (let i = 0; i < 7; i++) {
       const date = new Date();
@@ -541,12 +585,15 @@
       : todayMatches.map(m => {
         const court = courts.find(c => c.id === m.courtId) || {name: "?", surface: "?"};
         const isFull = m.players.length >= m.maxPlayers;
+        const sportIcon = SPORTS_CONFIG[m.sport]?.icon || "⚽";
+        
         return `
           <div class="match-card">
-            <div style="display:flex; justify-content:space-between;">
-              <div><strong>${m.time}</strong> @ ${court.name}</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+              <div><span class="sport-icon">${sportIcon}</span><strong>${m.sport}</strong> • ${m.time}</div>
               ${!isFull ? `<button class="btn-small" onclick="joinMatch(${m.id})">Unisciti</button>` : '<small style="color:var(--accent)">PIENO</small>'}
             </div>
+            <div style="opacity:0.7; font-size:0.85rem;">@ ${court.name}</div>
             <p style="margin:8px 0 0 0; font-size:0.85rem;">Giocatori (${m.players.length}/${m.maxPlayers}): ${m.players.join(", ")}</p>
           </div>
         `;
@@ -556,12 +603,15 @@
     if (pastMatches.length > 0) {
       const archiveCards = pastMatches.map(m => {
         const court = courts.find(c => c.id === m.courtId) || {name: "?", surface: "?"};
+        const sportIcon = SPORTS_CONFIG[m.sport]?.icon || "⚽";
+        
         return `
           <div class="match-card" style="opacity:0.7;">
-            <div style="display:flex; justify-content:space-between;">
-              <div><strong>${m.time}</strong> @ ${court.name}</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+              <div><span class="sport-icon">${sportIcon}</span><strong>${m.sport}</strong> • ${m.time}</div>
               <small style="color:var(--text-muted);">${m.date}</small>
             </div>
+            <div style="opacity:0.7; font-size:0.85rem;">@ ${court.name}</div>
             <p style="margin:8px 0 0 0; font-size:0.85rem;">Giocatori: ${m.players.join(", ")}</p>
           </div>
         `;
@@ -605,15 +655,32 @@
       return;
     }
 
+    const sportList = Object.keys(SPORTS_CONFIG);
+    const sportOptions = sportList.map(s => `<option value="${s}">${SPORTS_CONFIG[s].icon} ${s}</option>`).join('');
+    
     const courtOptions = courts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     const dateStr = formatDate(selectedDate);
+    
+    // Opzioni giocatori dinamiche in base allo sport
+    const playersConfig = SPORTS_CONFIG[selectedSport].players;
+    const playerOptions = Object.entries(playersConfig).map(([label, count]) => `<option value="${count}">${label}</option>`).join('');
+    
+    const surfaceOptions = SPORTS_CONFIG[selectedSport].surfaces.map(s => `<option>${s}</option>`).join('');
     
     app.innerHTML = `
       <button class="btn-secondary" onclick="navigate('home')">← Home</button>
       <h2>Crea Partita</h2>
-      <p style="opacity:0.7; font-size:0.9rem;">Data: ${dateStr}</p>
+      
+      <div class="date-modifier">
+        <button onclick="changeDate(-1)">← Indietro</button>
+        <div style="flex:2; text-align:center; padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; font-weight:500;">${dateStr}</div>
+        <button onclick="changeDate(1)">Avanti →</button>
+      </div>
       
       <form onsubmit="event.preventDefault(); handleCreateMatch();">
+        <label class="subtitle">SPORT</label>
+        <select id="sportSelect" onchange="updateSportDetails()">${sportOptions}</select>
+        
         <label class="subtitle">CAMPO</label>
         <select id="courtSelect">${courtOptions}</select>
         
@@ -621,10 +688,7 @@
         <input type="time" id="timeInput" value="18:00">
         
         <label class="subtitle">NUMERO GIOCATORI</label>
-        <select id="maxPlayersSelect">
-          <option value="2">2 (Singolare)</option>
-          <option value="4" selected>4 (Doppio 2v2)</option>
-        </select>
+        <select id="maxPlayersSelect">${playerOptions}</select>
         
         <div class="checkbox-group">
           <input type="checkbox" id="hostParticipates" checked>
@@ -634,16 +698,34 @@
         <button type="submit" class="btn-primary">Conferma</button>
       </form>
     `;
+    
+    document.getElementById('sportSelect').value = selectedSport;
+  }
+
+  window.changeDate = function(days) {
+    selectedDate.setDate(selectedDate.getDate() + days);
+    renderCreate();
+  }
+
+  window.updateSportDetails = function() {
+    const sportSelect = document.getElementById('sportSelect');
+    selectedSport = sportSelect.value;
+    
+    // Aggiorna giocatori
+    const playersConfig = SPORTS_CONFIG[selectedSport].players;
+    const playerOptions = Object.entries(playersConfig).map(([label, count]) => `<option value="${count}">${label}</option>`).join('');
+    document.getElementById('maxPlayersSelect').innerHTML = playerOptions;
   }
 
   window.handleCreateMatch = function() {
+    const sport = document.getElementById('sportSelect').value;
     const courtId = document.getElementById('courtSelect').value;
     const time = document.getElementById('timeInput').value;
     const maxPlayers = document.getElementById('maxPlayersSelect').value;
     const hostParticipates = document.getElementById('hostParticipates').checked;
     
     if (!time) return showToast("Seleziona orario");
-    createMatch(courtId, time, maxPlayers, hostParticipates);
+    createMatch(courtId, time, maxPlayers, hostParticipates, sport);
   }
 
   function renderAddCourt() {
@@ -660,6 +742,8 @@
           <option>Terra Rossa</option>
           <option>Erba Sintetica</option>
           <option>Cemento</option>
+          <option>Legno</option>
+          <option>Erba</option>
         </select>
         
         <button type="submit" class="btn-primary">Aggiungi</button>
