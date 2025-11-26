@@ -12,7 +12,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
   <style>
-    /* === RESET & VARIABLES === */
     :root {
       --text-main: #1a2e1a;
       --text-muted: #5c6b5c;
@@ -52,7 +51,6 @@
       padding: max(16px, 1rem);
     }
 
-    /* === CONTAINER === */
     #app-container {
       width: 100%;
       max-width: 480px;
@@ -67,17 +65,12 @@
       max-height: 95vh;
       overflow-y: auto;
       overflow-x: hidden;
+      padding-bottom: max(100px, 8rem);
     }
 
     @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     #app-container::-webkit-scrollbar {
@@ -94,10 +87,7 @@
       border-radius: 10px;
     }
 
-    /* === TYPOGRAPHY === */
-    h1,
-    h2,
-    h3 {
+    h1, h2, h3 {
       font-family: 'Playfair Display', serif;
       font-weight: 600;
       margin: 0;
@@ -105,27 +95,11 @@
       line-height: 1.2;
     }
 
-    h1 {
-      font-size: min(2.2rem, 6vw);
-      margin-bottom: 8px;
-    }
+    h1 { font-size: min(2.2rem, 6vw); margin-bottom: 8px; }
+    h2 { font-size: min(1.5rem, 5vw); margin-bottom: 12px; }
+    h3 { font-size: 1rem; margin-bottom: 8px; }
 
-    h2 {
-      font-size: min(1.5rem, 5vw);
-      margin-bottom: 12px;
-    }
-
-    h3 {
-      font-size: 1rem;
-      margin-bottom: 8px;
-    }
-
-    p {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: var(--text-muted);
-      margin: 0 0 16px 0;
-    }
+    p { font-size: 0.95rem; line-height: 1.6; color: var(--text-muted); margin: 0 0 16px 0; }
 
     .subtitle {
       text-transform: uppercase;
@@ -137,7 +111,6 @@
       display: block;
     }
 
-    /* === BUTTONS === */
     button {
       font-family: inherit;
       font-weight: 500;
@@ -149,14 +122,8 @@
       outline-offset: 2px;
     }
 
-    button:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    button:active { transform: scale(0.98); }
 
     .btn-primary {
       background: var(--text-main);
@@ -174,14 +141,8 @@
       margin-bottom: 10px;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(26, 46, 26, 0.25);
-    }
-
-    .btn-primary:last-child {
-      margin-bottom: 0;
-    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(26, 46, 26, 0.25); }
+    .btn-primary:last-child { margin-bottom: 0; }
 
     .btn-secondary {
       background: transparent;
@@ -194,9 +155,7 @@
       gap: 5px;
     }
 
-    .btn-secondary:hover {
-      opacity: 1;
-    }
+    .btn-secondary:hover { opacity: 1; }
 
     .btn-small {
       background: var(--accent);
@@ -210,9 +169,20 @@
       white-space: nowrap;
     }
 
-    .btn-small:hover {
-      background: var(--accent-hover);
+    .btn-small:hover { background: var(--accent-hover); }
+
+    .btn-danger {
+      background: rgba(192, 21, 47, 0.15);
+      color: #c0152f;
+      padding: max(6px, 0.5rem) max(12px, 1rem);
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      min-height: 40px;
+      border: 1px solid rgba(192, 21, 47, 0.3);
     }
+
+    .btn-danger:hover { background: rgba(192, 21, 47, 0.25); }
 
     .btn-share {
       background: rgba(212, 163, 115, 0.15);
@@ -225,13 +195,9 @@
       margin: 0;
     }
 
-    .btn-share:hover {
-      background: rgba(212, 163, 115, 0.25);
-    }
+    .btn-share:hover { background: rgba(212, 163, 115, 0.25); }
 
-    /* === FORMS === */
-    select,
-    input {
+    select, input {
       width: 100%;
       padding: max(12px, 1rem);
       border: 1px solid rgba(0, 0, 0, 0.1);
@@ -255,19 +221,13 @@
       padding-right: 36px;
     }
 
-    select:focus,
-    input:focus {
+    select:focus, input:focus {
       border-color: var(--text-main);
       box-shadow: 0 0 0 3px rgba(26, 46, 26, 0.1);
     }
 
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 0.95rem;
-    }
+    label { display: block; margin-bottom: 6px; font-size: 0.95rem; }
 
-    /* === CARDS === */
     .match-card {
       background: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.5);
@@ -283,14 +243,8 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
-    .sport-icon {
-      display: inline-block;
-      font-size: 1.3rem;
-      margin-right: 6px;
-      line-height: 1;
-    }
+    .sport-icon { display: inline-block; font-size: 1.3rem; margin-right: 6px; line-height: 1; }
 
-    /* === STATS === */
     .stat-card {
       background: linear-gradient(135deg, rgba(212, 163, 115, 0.1) 0%, rgba(212, 163, 115, 0.05) 100%);
       border: 1px solid rgba(212, 163, 115, 0.3);
@@ -300,19 +254,9 @@
       text-align: center;
     }
 
-    .stat-card strong {
-      font-size: min(2rem, 6vw);
-      color: var(--accent);
-      display: block;
-      margin-bottom: 4px;
-    }
+    .stat-card strong { font-size: min(2rem, 6vw); color: var(--accent); display: block; margin-bottom: 4px; }
+    .stat-card p { margin: 0; font-size: 0.9rem; }
 
-    .stat-card p {
-      margin: 0;
-      font-size: 0.9rem;
-    }
-
-    /* === USER INFO === */
     .user-info {
       display: flex;
       align-items: center;
@@ -323,40 +267,10 @@
       margin-bottom: 16px;
     }
 
-    .user-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--accent);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      color: white;
-      font-size: 1.2rem;
-    }
+    .user-info > div { flex: 1; min-width: 0; }
+    .user-info strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-info a { color: var(--accent); text-decoration: none; cursor: pointer; font-size: 0.85rem; }
 
-    .user-info > div {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .user-info strong {
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .user-info a {
-      color: var(--accent);
-      text-decoration: none;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-
-    /* === PROFILE === */
     .profile-header {
       text-align: center;
       padding: 20px;
@@ -379,7 +293,6 @@
       color: white;
     }
 
-    /* === CALENDAR === */
     .calendar-week {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -405,30 +318,12 @@
       gap: 2px;
     }
 
-    .day-btn:hover {
-      background: rgba(255, 255, 255, 0.9);
-    }
+    .day-btn:hover { background: rgba(255, 255, 255, 0.9); }
+    .day-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .day-label { font-size: 0.65rem; opacity: 0.6; }
+    .day-number { font-size: 1.1rem; font-weight: 600; }
 
-    .day-btn.active {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .day-label {
-      font-size: 0.65rem;
-      opacity: 0.6;
-    }
-
-    .day-number {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    /* === ACCORDION === */
-    .accordion {
-      margin-top: 16px;
-    }
+    .accordion { margin-top: 16px; }
 
     .accordion-header {
       background: rgba(212, 163, 115, 0.15);
@@ -444,15 +339,8 @@
       border: 1px solid rgba(212, 163, 115, 0.3);
     }
 
-    .accordion-header:hover {
-      background: rgba(212, 163, 115, 0.25);
-    }
-
-    .accordion-header.open {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
+    .accordion-header:hover { background: rgba(212, 163, 115, 0.25); }
+    .accordion-header.open { background: var(--accent); color: white; border-color: var(--accent); }
 
     .accordion-content {
       display: none;
@@ -463,11 +351,8 @@
       border-top: none;
     }
 
-    .accordion-content.open {
-      display: block;
-    }
+    .accordion-content.open { display: block; }
 
-    /* === TOAST === */
     #toast {
       visibility: hidden;
       background-color: var(--text-main);
@@ -486,13 +371,8 @@
       transition: opacity 0.3s, bottom 0.3s;
     }
 
-    #toast.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 30px;
-    }
+    #toast.show { visibility: visible; opacity: 1; bottom: 30px; }
 
-    /* === MODAL === */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -507,9 +387,7 @@
       padding: 1rem;
     }
 
-    .modal-overlay.show {
-      display: flex;
-    }
+    .modal-overlay.show { display: flex; }
 
     .modal-content {
       background: white;
@@ -523,12 +401,8 @@
       overflow-y: auto;
     }
 
-    .modal-content h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+    .modal-content h2 { text-align: center; margin-bottom: 20px; }
 
-    /* === UTILITIES === */
     .checkbox-group {
       display: flex;
       gap: 10px;
@@ -544,10 +418,7 @@
       min-height: 20px;
     }
 
-    .checkbox-group label {
-      margin: 0;
-      font-size: 0.95rem;
-    }
+    .checkbox-group label { margin: 0; font-size: 0.95rem; }
 
     .date-modifier {
       display: grid;
@@ -566,115 +437,128 @@
       margin-bottom: 0;
     }
 
+    /* === LANGUAGE SELECTOR BASSO DESTRA === */
     .language-selector {
       position: fixed;
-      top: 12px;
-      right: 12px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent);
+      border: none;
+      padding: 10px 14px;
+      border-radius: 50px;
+      font-size: 0.9rem;
       cursor: pointer;
-      min-height: 40px;
+      min-height: 44px;
       z-index: 100;
-      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-lg);
+      color: white;
+      font-weight: 600;
+      transition: all var(--transition);
     }
 
-    .language-selector:focus-visible {
-      outline: 2px solid var(--accent);
+    .language-selector:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .language-selector:focus-visible { outline: 2px solid var(--text-main); outline-offset: 2px; }
+
+    /* === CAROUSEL IMMAGINI BASSO === */
+    .carousel-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: transparent;
+      padding: 12px;
+      display: none;
+      z-index: 50;
+      justify-content: center;
     }
 
-    .match-header {
+    .carousel-container.active { display: flex; }
+
+    .carousel {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
       gap: 8px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      max-width: 100%;
     }
 
-    /* === RESPONSIVE === */
-    @media (max-height: 600px) {
-      #app-container {
-        max-height: none;
-        border-radius: 20px;
-      }
+    .carousel::-webkit-scrollbar {
+      height: 4px;
+    }
 
-      body {
-        align-items: flex-start;
-        padding-top: 12px;
-        padding-bottom: 12px;
-      }
+    .carousel::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+
+    .carousel::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 10px;
+    }
+
+    .carousel-item {
+      flex: 0 0 auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform var(--transition);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .carousel-item:hover { transform: scale(1.05); }
+
+    .carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (max-height: 600px) {
+      #app-container { max-height: none; border-radius: 20px; }
+      body { align-items: flex-start; padding-top: 12px; padding-bottom: 12px; }
     }
 
     @media (max-width: 380px) {
-      h1 {
-        font-size: 1.6rem;
-      }
-
-      #app-container {
-        padding: max(16px, 1rem);
-        border-radius: 20px;
-      }
-
-      .btn-primary {
-        font-size: 0.95rem;
-        min-height: 44px;
-      }
-
-      .stat-card strong {
-        font-size: 1.6rem;
-      }
-
-      .day-btn {
-        min-height: 44px;
-        font-size: 0.7rem;
-      }
+      h1 { font-size: 1.6rem; }
+      #app-container { padding: max(16px, 1rem); border-radius: 20px; }
+      .btn-primary { font-size: 0.95rem; min-height: 44px; }
+      .stat-card strong { font-size: 1.6rem; }
+      .day-btn { min-height: 44px; font-size: 0.7rem; }
     }
 
     @media (orientation: landscape) and (max-height: 500px) {
-      #app-container {
-        max-height: calc(100vh - 20px);
-      }
-
-      h1 {
-        font-size: 1.4rem;
-        margin-bottom: 4px;
-      }
-
-      h2 {
-        font-size: 1.2rem;
-        margin-bottom: 8px;
-      }
-
-      .btn-primary {
-        min-height: 44px;
-        padding: 10px;
-      }
+      #app-container { max-height: calc(100vh - 20px); }
+      h1 { font-size: 1.4rem; margin-bottom: 4px; }
+      h2 { font-size: 1.2rem; margin-bottom: 8px; }
+      .btn-primary { min-height: 44px; padding: 10px; }
     }
 
     @media print {
-      body {
-        background: white;
-      }
-
-      #app-container {
-        box-shadow: none;
-        max-height: none;
-      }
+      body { background: white; }
+      #app-container { box-shadow: none; max-height: none; }
     }
   </style>
 </head>
 <body>
 
 <select class="language-selector" id="langSelector" onchange="setLanguage(this.value)" aria-label="Seleziona lingua">
-  <option value="it">🇮🇹 Italiano</option>
-  <option value="en">🇬🇧 English</option>
+  <option value="it">🇮🇹</option>
+  <option value="en">🇬🇧</option>
 </select>
 
 <div id="app-container" role="main"></div>
 <div id="toast" role="status" aria-live="polite"></div>
+
+<!-- CAROUSEL IMMAGINI -->
+<div id="carouselContainer" class="carousel-container">
+  <ul class="carousel" id="carousel"></ul>
+</div>
 
 <div id="winnerModal" class="modal-overlay">
   <div class="modal-content">
@@ -686,7 +570,7 @@
 
 <script>
   const BIN_ID = localStorage.getItem('sports_bin_id') || "69272ed843b1c97be9c6cd79"; 
-  const API_KEY = localStorage.getItem('sports_api_key') || "$2a$10$aMh1mO8btCVSqfcvlxvUJeJ6p.7kHJlSyKz7UjvTu2wqRAQlAcAXe"; 
+  const API_KEY = localStorage.getItem('sports_api_key') || "INCOLLA_QUI_LA_TUA_MASTER_KEY"; 
   const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
   const TRANSLATIONS = {
@@ -701,6 +585,7 @@
       available_matches: "Partite Disponibili",
       no_matches: "Nessuna partita oggi",
       join: "Unisciti",
+      leave: "Esci dalla Partita",
       share: "Condividi",
       full: "PIENO",
       players: "Giocatori",
@@ -737,7 +622,8 @@
       enter_name: "Inserisci un nome",
       profile: "Profilo",
       view_profile: "Visualizza Profilo",
-      stats: "Statistiche"
+      stats: "Statistiche",
+      left_match: "Sei uscito dalla partita"
     },
     en: {
       sports_club: "Sports Club",
@@ -750,6 +636,7 @@
       available_matches: "Available Matches",
       no_matches: "No matches today",
       join: "Join",
+      leave: "Leave Match",
       share: "Share",
       full: "FULL",
       players: "Players",
@@ -786,7 +673,8 @@
       enter_name: "Enter your name",
       profile: "Profile",
       view_profile: "View Profile",
-      stats: "Statistics"
+      stats: "Statistics",
+      left_match: "You left the match"
     }
   };
 
@@ -804,6 +692,7 @@
   let selectedSport = "Tennis";
   let currentLang = localStorage.getItem('sports_lang') || 'it';
   let currentMatchForWinner = null;
+  let carouselImages = JSON.parse(localStorage.getItem('carousel_images')) || [];
 
   const defaultCourts = [
     { id: 1, name: "Masseria San Domenico", surface: "Terra Rossa", owner: "Admin" },
@@ -907,12 +796,24 @@
 
     const court = courts.find(c => c.id === match.courtId) || { name: "?" };
     const sportIcon = SPORTS_CONFIG[match.sport]?.icon || "⚽";
-    const shareText = `${t('join')} ${match.sport}! ${sportIcon}\n${t('court')}: ${court.name}\n${t('time')}: ${match.time}`;
+    const siteUrl = window.location.href;
+    const shareText = `${t('join')} ${match.sport}! ${sportIcon}\n${t('court')}: ${court.name}\n${t('time')}: ${match.time}\n\n${siteUrl}`;
 
     if (navigator.share) {
       navigator.share({ title: `Valle d'Itria ${match.sport}`, text: shareText }).catch(() => {});
     } else {
       showToast("Share non disponibile");
+    }
+  }
+
+  async function leaveMatch(matchId) {
+    if (!currentUser) return;
+    const match = matches.find(m => m.id === matchId);
+    if (match) {
+      match.players = match.players.filter(p => p !== currentUser.name);
+      await saveData();
+      showToast(t('left_match'));
+      navigate('matches');
     }
   }
 
@@ -943,6 +844,32 @@
       showToast(`${winnerName} ${t('wins')}! 🏆`);
       navigate('matches');
     }
+  }
+
+  function updateCarousel() {
+    const container = document.getElementById('carouselContainer');
+    const carousel = document.getElementById('carousel');
+
+    if (carouselImages.length === 0) {
+      container.classList.remove('active');
+      return;
+    }
+
+    carousel.innerHTML = carouselImages.map((img, idx) => `
+      <li class="carousel-item" key="${idx}">
+        <img src="${img}" alt="Immagine ${idx + 1}" loading="lazy">
+      </li>
+    `).join('');
+
+    container.classList.add('active');
+  }
+
+  // Carica immagini dal localStorage (per demo)
+  window.addCarouselImage = function(imageUrl) {
+    carouselImages.push(imageUrl);
+    localStorage.setItem('carousel_images', JSON.stringify(carouselImages));
+    updateCarousel();
+    showToast("Immagine aggiunta al carousel");
   }
 
   const app = document.getElementById('app-container');
@@ -1054,7 +981,7 @@
 
   function renderHome() {
     app.innerHTML = `
-      ${currentUser ? `<div class="user-info"><div class="user-avatar">${currentUser.name[0].toUpperCase()}</div><div><strong>${currentUser.name}</strong><br><a style="cursor:pointer;" onclick="navigate('profile')">${t('view_profile')}</a></div></div>` : ''}
+      ${currentUser ? `<div class="user-info"><div><strong>${currentUser.name}</strong><br><a style="cursor:pointer;" onclick="navigate('profile')">${t('view_profile')}</a></div></div>` : ''}
 
       <div style="text-align:center; margin-bottom:20px;">
         <span class="subtitle">${t('calendar')}</span>
@@ -1100,6 +1027,7 @@
         const court = courts.find(c => c.id === m.courtId) || { name: "?" };
         const isFull = m.players.length >= m.maxPlayers;
         const sportIcon = SPORTS_CONFIG[m.sport]?.icon || "⚽";
+        const isPlayerInMatch = m.players.includes(currentUser?.name);
 
         return `
           <div class="match-card">
@@ -1109,9 +1037,9 @@
             </div>
             <div style="opacity:0.7; font-size:0.85rem; margin-bottom: 8px;">@ ${court.name}</div>
             <p style="margin:0 0 10px 0; font-size:0.85rem;">${t('players')} (${m.players.length}/${m.maxPlayers}): ${m.players.join(", ")}</p>
-            <div style="display:flex; gap:8px;">
-              ${!isFull ? `<button class="btn-small" onclick="joinMatch(${m.id})">${t('join')}</button>` : `<span style="color:var(--accent); font-weight:600;">${t('full')}</span>`}
-              ${m.players.includes(currentUser?.name) ? `<button class="btn-small" onclick="openWinnerModal(${m.id})">🏆</button>` : ''}
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              ${isPlayerInMatch ? `<button class="btn-danger" onclick="leaveMatch(${m.id})">${t('leave')}</button>` : !isFull ? `<button class="btn-small" onclick="joinMatch(${m.id})">${t('join')}</button>` : `<span style="color:var(--accent); font-weight:600;">${t('full')}</span>`}
+              ${isPlayerInMatch ? `<button class="btn-small" onclick="openWinnerModal(${m.id})">🏆</button>` : ''}
             </div>
           </div>
         `;
@@ -1162,6 +1090,7 @@
     header.classList.toggle("open");
     header.nextElementSibling.classList.toggle("open");
   };
+  window.leaveMatch = leaveMatch;
 
   function renderCreate() {
     if (!courts?.length) {
@@ -1352,6 +1281,7 @@
     document.getElementById('langSelector').value = currentLang;
     document.documentElement.lang = currentLang;
     await loadData();
+    updateCarousel();
     const saved = loadUsername();
     if (saved) navigate('home');
     else navigate('login');
