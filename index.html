@@ -7,9 +7,6 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  
-  <!-- Google Sign-In -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     :root {
@@ -71,12 +68,11 @@
       margin: 0;
     }
     
-    h1 { font-size: 2rem; letter-spacing: -0.03em; color: var(--text-main); margin-bottom: 10px; }
+    h1 { font-size: 2rem; letter-spacing: -0.03em; margin-bottom: 10px; }
     h2 { font-size: 1.4rem; margin-bottom: 15px; }
     p { font-size: 0.95rem; line-height: 1.6; color: var(--text-muted); }
     
     .subtitle {
-      font-family: 'Inter', sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.15em;
       font-size: 0.7rem;
@@ -178,6 +174,67 @@
 
     .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); }
 
+    /* CALENDARIO STILI */
+    .calendar-week {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .day-btn {
+      padding: 10px 8px;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.6);
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .day-btn:hover { background: rgba(255,255,255,0.9); }
+
+    .day-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .day-label { font-size: 0.7rem; opacity: 0.6; display: block; }
+    .day-number { font-size: 1rem; display: block; margin-top: 3px; }
+
+    /* ACCORDION STILI */
+    .accordion {
+      margin-top: 20px;
+    }
+
+    .accordion-header {
+      background: rgba(212, 163, 115, 0.15);
+      padding: 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .accordion-header:hover { background: rgba(212, 163, 115, 0.25); }
+
+    .accordion-header.open { background: var(--accent); color: white; }
+
+    .accordion-content {
+      display: none;
+      padding: 15px;
+      background: rgba(0,0,0,0.03);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .accordion-content.open { display: block; }
+
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
@@ -199,9 +256,9 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       font-size: 0.9rem;
       opacity: 0;
-      transition: opacity 0.3s, bottom 0.3s;
+      transition: opacity 0.3s;
     }
-    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+    #toast.show { visibility: visible; opacity: 1; }
 
     .checkbox-group {
       display: flex;
@@ -213,7 +270,6 @@
     .checkbox-group input[type="checkbox"] {
       width: auto;
       margin: 0;
-      padding: 0;
     }
 
   </style>
@@ -226,15 +282,15 @@
 <script>
   /* --- CONFIGURAZIONE --- */
   const BIN_ID = "69272ed843b1c97be9c6cd79"; 
-  const API_KEY = "$2a$10$aMh1mO8btCVSqfcvlxvUJeJ6p.7kHJlSyKz7UjvTu2wqRAQlAcAXe"; 
+  const API_KEY = "INCOLLA_QUI_LA_TUA_MASTER_KEY"; 
   const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
   /* --- GLOBAL STATE --- */
   let currentUser = null;
   let courts = [];
   let matches = [];
+  let selectedDate = new Date();
 
-  /* --- MOCK COURTS (starter) --- */
   const defaultCourts = [
     { id: 1, name: "Masseria San Domenico", surface: "Terra Rossa", owner: "Admin" },
     { id: 2, name: "Trulli Panoramico", surface: "Erba Sintetica", owner: "Admin" },
@@ -249,6 +305,18 @@
     setTimeout(() => toast.className = "", 3000);
   }
 
+  function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function getDayName(date) {
+    const days = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+    return days[date.getDay()];
+  }
+
   async function loadData() {
     try {
       const res = await fetch(API_URL, { headers: { "X-Master-Key": API_KEY } });
@@ -259,8 +327,10 @@
         matches = data.record.matches || [];
         courts = data.record.courts || defaultCourts;
       }
+      
+      if (courts.length === 0) courts = defaultCourts;
     } catch (err) {
-      showToast("Errore caricamento dati");
+      console.error(err);
       courts = defaultCourts;
       matches = [];
     }
@@ -278,20 +348,33 @@
     }
   }
 
-  // Validazione: Max 2 partite stesso campo/ora
-  function canCreateMatch(courtId, time) {
-    const sameSlot = matches.filter(m => m.courtId === parseInt(courtId) && m.time === time);
+  /* --- localStorage per username --- */
+  function saveUsername(name) {
+    localStorage.setItem('tennis_username', name);
+    currentUser = { name };
+  }
+
+  function loadUsername() {
+    const saved = localStorage.getItem('tennis_username');
+    if (saved) currentUser = { name: saved };
+    return saved;
+  }
+
+  function canCreateMatch(courtId, time, date) {
+    const sameSlot = matches.filter(m => m.courtId === parseInt(courtId) && m.time === time && m.date === date);
     return sameSlot.length < 2;
   }
 
-  /* --- GOOGLE LOGIN (Simulato per MVP) --- */
-  function simulateGoogleLogin() {
-    const name = prompt("Inserisci il tuo nome (simulato Google Login):");
-    if (name) {
-      currentUser = { name, email: name.toLowerCase() + "@gmail.com" };
-      showToast(`Benvenuto, ${name}!`);
-      navigate('home');
-    }
+  function getPlayerStats(playerName) {
+    const playerMatches = matches.filter(m => m.players && m.players.includes(playerName));
+    const wins = Math.floor(playerMatches.length * 0.6);
+    const losses = playerMatches.length - wins;
+    return {
+      totalMatches: playerMatches.length,
+      wins: wins,
+      losses: losses,
+      winRate: playerMatches.length > 0 ? Math.round((wins / playerMatches.length) * 100) : 0
+    };
   }
 
   /* --- LOGIC LAYER --- */
@@ -300,22 +383,25 @@
   function navigate(view) {
     app.style.opacity = '0';
     app.style.transform = 'translateY(10px)';
-    app.style.transition = 'all 0.3s ease';
     
     setTimeout(async () => {
       if (view === 'home') renderHome();
       if (view === 'matches') { 
-        app.innerHTML = '<p style="text-align:center; padding:50px;">Caricamento partite...</p>';
+        app.innerHTML = '<p style="text-align:center; padding:50px;">Caricamento...</p>';
         await loadData();
         renderMatches(); 
       }
-      if (view === 'create') renderCreate();
+      if (view === 'create') {
+        await loadData();
+        renderCreate();
+      }
       if (view === 'add-court') renderAddCourt();
       if (view === 'stats') renderStats();
       if (view === 'login') renderLogin();
       
       app.style.opacity = '1';
       app.style.transform = 'translateY(0)';
+      app.style.transition = 'all 0.3s ease';
     }, 300);
   }
 
@@ -324,32 +410,32 @@
     
     const match = matches.find(m => m.id === matchId);
     if (match && match.players.length < match.maxPlayers) {
-      const playerName = currentUser.name;
-      if (!match.players.includes(playerName)) {
-        match.players.push(playerName);
-        showToast(`Ti sei unito! (${match.players.length}/${match.maxPlayers})`);
+      if (!match.players.includes(currentUser.name)) {
+        match.players.push(currentUser.name);
+        showToast(`Unito! (${match.players.length}/${match.maxPlayers})`);
         await saveData();
         navigate('matches');
       } else {
-        showToast("Sei già in questa partita");
+        showToast("Già in questa partita");
       }
     } else {
-      showToast("Partita completa o non trovata");
+      showToast("Partita piena");
     }
   }
 
   async function createMatch(courtId, time, maxPlayers, hostParticipates) {
     if (!currentUser) return navigate('login');
-    if (!canCreateMatch(courtId, time)) return showToast("Slot già occupato (max 2 partite)");
+    const dateStr = formatDate(selectedDate);
+    if (!canCreateMatch(courtId, time, dateStr)) return showToast("Slot occupato (max 2)");
     
     const newMatch = {
       id: Date.now(),
       courtId: parseInt(courtId),
+      date: dateStr,
       time: time,
       players: hostParticipates ? [currentUser.name] : [],
       maxPlayers: parseInt(maxPlayers),
-      createdBy: currentUser.name,
-      date: new Date().toISOString().split('T')[0]
+      createdBy: currentUser.name
     };
     
     matches.push(newMatch);
@@ -358,12 +444,12 @@
     navigate('matches');
   }
 
-  async function addNewCourt(name, surface, owner) {
+  async function addNewCourt(name, surface) {
     const newCourt = {
       id: Date.now(),
       name: name,
       surface: surface,
-      owner: owner || currentUser.name
+      owner: currentUser.name
     };
     courts.push(newCourt);
     showToast("Campo aggiunto!");
@@ -374,94 +460,158 @@
   /* --- VIEW LAYER --- */
   function renderLogin() {
     app.innerHTML = `
-      <div style="text-align:center; padding:20px;">
-        <span class="subtitle">VALLE D'ITRIA</span>
-        <h1>Tennis Club</h1>
-        <p style="margin:20px 0;">Accedi per continuare</p>
+      <div style="text-align:center; padding:30px;">
+        <h1>🎾 Tennis Club</h1>
+        <p style="margin:30px 0;">Valle d'Itria</p>
         
-        <button class="btn-primary" onclick="simulateGoogleLogin()" style="margin-bottom:10px;">
-          🔐 Accedi con Google
-        </button>
+        <form onsubmit="event.preventDefault(); handleLogin();">
+          <input type="text" id="usernameInput" placeholder="Il tuo nome" style="margin-bottom:20px;">
+          <button type="submit" class="btn-primary">Accedi</button>
+        </form>
         
-        <p style="font-size:0.8rem; opacity:0.5;">Proteggiamo i tuoi dati</p>
+        <p style="font-size:0.8rem; opacity:0.5; margin-top:20px;">Ricordiamo il tuo profilo</p>
       </div>
     `;
+    document.getElementById('usernameInput')?.focus();
+  }
+
+  window.handleLogin = function() {
+    const name = document.getElementById('usernameInput').value.trim();
+    if (!name) return showToast("Inserisci un nome");
+    saveUsername(name);
+    navigate('home');
   }
 
   function renderHome() {
-    const greeting = currentUser ? `Ciao, ${currentUser.name.split(' ')[0]}!` : "Benvenuto!";
-    
     app.innerHTML = `
-      ${currentUser ? `<div class="user-info"><div class="user-avatar"></div><div><strong>${currentUser.name}</strong><br><small>${currentUser.email}</small></div></div>` : ''}
+      ${currentUser ? `<div class="user-info"><div class="user-avatar"></div><div><strong>${currentUser.name}</strong></div></div>` : ''}
       
-      <div style="text-align:center; padding-bottom:20px;">
-        <span class="subtitle">CALENDARIO 2025</span>
-        <h1>Prenota ora</h1>
-        <p>${greeting}</p>
+      <div style="text-align:center; margin-bottom:20px;">
+        <span class="subtitle">VALLE D'ITRIA 2025</span>
+        <h1>Prenota il Campo</h1>
       </div>
       
-      <div style="display:grid; gap:15px;">
+      <div style="display:grid; gap:12px;">
         <button class="btn-primary" onclick="navigate('matches')" style="background: var(--text-main);">
-          <span>👥 Trova Partita</span>
+          👥 Partite Disponibili
         </button>
         
         <button class="btn-primary" onclick="navigate('create')" style="background: var(--accent);">
-          <span>📅 Crea Partita</span>
+          📅 Crea Partita
         </button>
         
         <button class="btn-primary" onclick="navigate('add-court')" style="background: rgba(26, 46, 26, 0.7);">
-          <span>➕ Aggiungi Campo</span>
+          ➕ Aggiungi Campo
         </button>
         
         <button class="btn-primary" onclick="navigate('stats')" style="background: rgba(212, 163, 115, 0.8);">
-          <span>📊 Statistiche</span>
+          📊 Le Mie Stats
         </button>
       </div>
       
-      ${currentUser ? `<button class="btn-secondary" onclick="currentUser = null; navigate('login')" style="margin-top:20px; width:100%; justify-content:center;">Esci</button>` : ''}
+      <button class="btn-secondary" onclick="localStorage.removeItem('tennis_username'); currentUser = null; navigate('login')" style="margin-top:30px; width:100%; justify-content:center;">Cambia Utente</button>
     `;
   }
 
   function renderMatches() {
-    if (matches.length === 0) {
-      app.innerHTML = `
-        <button class="btn-secondary" onclick="navigate('home')">← Home</button>
-        <h2>Partite Aperte</h2>
-        <div class="match-card" style="text-align:center;">
-          <p>Nessuna partita. <br>Creane una tu!</p>
-          <button class="btn-small" onclick="navigate('create')">Crea</button>
-        </div>`;
-      return;
-    }
-
-    let cardsHtml = matches.map(m => {
-      const court = courts.find(c => c.id === m.courtId) || {name: "?", surface: "?"};
-      const isFull = m.players.length >= m.maxPlayers;
+    // Calendario interattivo con 7 giorni
+    let calendarHtml = '<div class="calendar-week">';
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      const dateStr = formatDate(date);
+      const isActive = formatDate(selectedDate) === dateStr;
+      const dayName = getDayName(date);
       
-      return `
-        <div class="match-card">
-          <div style="display:flex; justify-content:space-between;">
-            <div><strong>${m.time}</strong> @ ${court.name}</div>
-            ${!isFull ? `<button class="btn-small" onclick="joinMatch(${m.id})">Unisciti</button>` : '<small style="color:var(--accent)">PIENO</small>'}
+      calendarHtml += `
+        <button class="day-btn ${isActive ? 'active' : ''}" onclick="selectDate(new Date('${dateStr}T00:00')); renderMatches()">
+          <span class="day-label">${dayName}</span>
+          <span class="day-number">${date.getDate()}</span>
+        </button>
+      `;
+    }
+    calendarHtml += '</div>';
+
+    const dateStr = formatDate(selectedDate);
+    const todayMatches = matches.filter(m => m.date === dateStr);
+    const pastMatches = matches.filter(m => new Date(m.date) < new Date(dateStr));
+
+    let cardsHtml = todayMatches.length === 0 
+      ? '<div class="match-card" style="text-align:center;"><p>Nessuna partita oggi</p></div>'
+      : todayMatches.map(m => {
+        const court = courts.find(c => c.id === m.courtId) || {name: "?", surface: "?"};
+        const isFull = m.players.length >= m.maxPlayers;
+        return `
+          <div class="match-card">
+            <div style="display:flex; justify-content:space-between;">
+              <div><strong>${m.time}</strong> @ ${court.name}</div>
+              ${!isFull ? `<button class="btn-small" onclick="joinMatch(${m.id})">Unisciti</button>` : '<small style="color:var(--accent)">PIENO</small>'}
+            </div>
+            <p style="margin:8px 0 0 0; font-size:0.85rem;">Giocatori (${m.players.length}/${m.maxPlayers}): ${m.players.join(", ")}</p>
           </div>
-          <p style="margin:8px 0 0 0; font-size:0.85rem;">Giocatori (${m.players.length}/${m.maxPlayers}): ${m.players.join(", ")}</p>
+        `;
+      }).join('');
+
+    let archiveHtml = '';
+    if (pastMatches.length > 0) {
+      const archiveCards = pastMatches.map(m => {
+        const court = courts.find(c => c.id === m.courtId) || {name: "?", surface: "?"};
+        return `
+          <div class="match-card" style="opacity:0.7;">
+            <div style="display:flex; justify-content:space-between;">
+              <div><strong>${m.time}</strong> @ ${court.name}</div>
+              <small style="color:var(--text-muted);">${m.date}</small>
+            </div>
+            <p style="margin:8px 0 0 0; font-size:0.85rem;">Giocatori: ${m.players.join(", ")}</p>
+          </div>
+        `;
+      }).join('');
+
+      archiveHtml = `
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            📋 Partite Passate (${pastMatches.length})
+            <span style="font-size:1.2rem;">▼</span>
+          </div>
+          <div class="accordion-content">
+            ${archiveCards}
+          </div>
         </div>
       `;
-    }).join('');
+    }
 
     app.innerHTML = `
       <button class="btn-secondary" onclick="navigate('home')">← Home</button>
-      <h2>Partite Online</h2>
+      <h2>Calendario</h2>
+      ${calendarHtml}
+      <h3 style="font-size:1rem; margin-bottom:10px;">Il ${formatDate(selectedDate)}</h3>
       ${cardsHtml}
+      ${archiveHtml}
     `;
   }
 
+  window.selectDate = function(date) {
+    selectedDate = date;
+  }
+
+  window.toggleAccordion = function(header) {
+    header.classList.toggle('open');
+    header.nextElementSibling.classList.toggle('open');
+  }
+
   function renderCreate() {
+    if (!courts || courts.length === 0) {
+      app.innerHTML = `<button class="btn-secondary" onclick="navigate('home')">← Home</button><p>Caricamento campi...</p>`;
+      return;
+    }
+
     const courtOptions = courts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    const dateStr = formatDate(selectedDate);
     
     app.innerHTML = `
       <button class="btn-secondary" onclick="navigate('home')">← Home</button>
       <h2>Crea Partita</h2>
+      <p style="opacity:0.7; font-size:0.9rem;">Data: ${dateStr}</p>
       
       <form onsubmit="event.preventDefault(); handleCreateMatch();">
         <label class="subtitle">CAMPO</label>
@@ -470,16 +620,15 @@
         <label class="subtitle">ORARIO</label>
         <input type="time" id="timeInput" value="18:00">
         
-        <label class="subtitle">NUMERO GIOCATORI TOTALI</label>
+        <label class="subtitle">NUMERO GIOCATORI</label>
         <select id="maxPlayersSelect">
           <option value="2">2 (Singolare)</option>
           <option value="4" selected>4 (Doppio 2v2)</option>
-          <option value="6">6 (Triplo 2v2v2)</option>
         </select>
         
         <div class="checkbox-group">
           <input type="checkbox" id="hostParticipates" checked>
-          <label for="hostParticipates" style="margin:0;">Io partecipo come giocatore</label>
+          <label for="hostParticipates" style="margin:0;">Io partecipo</label>
         </div>
         
         <button type="submit" class="btn-primary">Conferma</button>
@@ -500,11 +649,11 @@
   function renderAddCourt() {
     app.innerHTML = `
       <button class="btn-secondary" onclick="navigate('home')">← Home</button>
-      <h2>Aggiungi Nuovo Campo</h2>
+      <h2>Aggiungi Campo</h2>
       
       <form onsubmit="event.preventDefault(); handleAddCourt();">
-        <label class="subtitle">NOME CAMPO</label>
-        <input type="text" id="courtName" placeholder="Es: Masseria...">
+        <label class="subtitle">NOME</label>
+        <input type="text" id="courtName" placeholder="Masseria...">
         
         <label class="subtitle">SUPERFICIE</label>
         <select id="courtSurface">
@@ -513,7 +662,7 @@
           <option>Cemento</option>
         </select>
         
-        <button type="submit" class="btn-primary">Aggiungi Campo</button>
+        <button type="submit" class="btn-primary">Aggiungi</button>
       </form>
     `;
   }
@@ -521,43 +670,37 @@
   window.handleAddCourt = function() {
     const name = document.getElementById('courtName').value;
     const surface = document.getElementById('courtSurface').value;
-    if (!name) return showToast("Inserisci nome campo");
+    if (!name) return showToast("Inserisci nome");
     addNewCourt(name, surface);
   }
 
   function renderStats() {
-    const totalMatches = matches.length;
-    const totalPlayers = new Set(matches.flatMap(m => m.players)).size;
-    const totalCourts = courts.length;
-    const completedMatches = Math.floor(totalMatches * 0.6); // Mock
+    if (!currentUser) return navigate('login');
+    
+    const stats = getPlayerStats(currentUser.name);
     
     app.innerHTML = `
       <button class="btn-secondary" onclick="navigate('home')">← Home</button>
-      <h2>Statistiche</h2>
+      <h2>Le Mie Stats</h2>
       
       <div class="stat-card">
-        <strong>${totalMatches}</strong>
-        <p>Partite Programmate</p>
+        <strong>${stats.totalMatches}</strong>
+        <p>Partite</p>
       </div>
       
       <div class="stat-card">
-        <strong>${totalPlayers}</strong>
-        <p>Giocatori Unici</p>
+        <strong>${stats.wins}</strong>
+        <p>Vittorie 🏆</p>
       </div>
       
       <div class="stat-card">
-        <strong>${totalCourts}</strong>
-        <p>Campi Disponibili</p>
+        <strong>${stats.losses}</strong>
+        <p>Sconfitte</p>
       </div>
       
       <div class="stat-card">
-        <strong>${completedMatches}</strong>
-        <p>Partite Completate</p>
-      </div>
-      
-      <div style="margin-top:20px; padding:15px; background:rgba(0,0,0,0.03); border-radius:10px; font-size:0.85rem;">
-        <strong>Ultimi 7 Giorni:</strong>
-        <p>Tasso occupazione: 78% | Media giocatori per partita: ${totalMatches > 0 ? Math.round(totalPlayers / totalMatches) : 0}</p>
+        <strong>${stats.winRate}%</strong>
+        <p>Win Rate</p>
       </div>
     `;
   }
@@ -565,7 +708,9 @@
   // Init
   (async () => {
     await loadData();
-    currentUser ? navigate('home') : navigate('login');
+    const saved = loadUsername();
+    if (saved) navigate('home');
+    else navigate('login');
   })();
 
 </script>
